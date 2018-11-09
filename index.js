@@ -15,6 +15,7 @@ massive(process.env.DBURI)
   .catch(err => {
     console.log(err);})
 
+app.use(express.static('./build'));
 
 app.get('/health', controller.getHealth);
 
@@ -28,4 +29,6 @@ app.get('/question/:id', controller.getQuestion);
 
 app.delete('/question/:id', controller.deleteQuestion);
 
-app.listen(8080);
+app.get('*',controller.getReact);
+
+app.listen(process.env.PORT || 8080);

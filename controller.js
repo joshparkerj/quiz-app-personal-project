@@ -57,5 +57,8 @@ module.exports = {
       .catch(err => {
         res.status(500).send('get question failed, no delete attempted');
         console.log(err);})
+  },
+  getReact: (req,res,next) => {
+    res.sendFile(__dirname + '/build/index.html');
   }
 }
