@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const controller = require('./controller');
+const nc = require('./controllers/nodb-controller');
+const qc = require('./controllers/question-controller');
+const uc = require('./controllers/user-controller');
 const massive = require('massive');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
@@ -17,18 +19,28 @@ massive(process.env.DBURI)
 
 app.use(express.static('./build'));
 
-app.get('/health', controller.getHealth);
+app.get('/questions', qc.getQuestions);
 
-app.get('/quip', controller.getQuip);
+app.post('/question', qc.addQuestion);
 
-app.get('/questions', controller.getQuestions);
+app.get('/question/:id', qc.getQuestion);
 
-app.post('/question', controller.addQuestion);
+app.delete('/question/:id', qc.deleteQuestion);
 
-app.get('/question/:id', controller.getQuestion);
+app.get('/users', uc.getUsers);
 
-app.delete('/question/:id', controller.deleteQuestion);
+app.post('/user', uc.postUser);
 
-app.get('*',controller.getReact);
+app.get('/user/:id', uc.getUser);
+
+app.delete('/user/:id', uc.deleteUser);
+
+app.post('/user-login',uc.authenticateUser);
+
+app.get('/health', nc.getHealth);
+
+app.get('/quip', nc.getQuip);
+
+app.get('*',nc.getReact);
 
 app.listen(process.env.PORT || 8080);

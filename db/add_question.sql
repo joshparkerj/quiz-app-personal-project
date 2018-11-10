@@ -1,3 +1,3 @@
 INSERT INTO question
-(text,answer)
-VALUES ($1,$2);
+(text,answer,author_id)
+VALUES ($1,$2,$3);

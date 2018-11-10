@@ -1,7 +1,4 @@
 module.exports = {
-  getHealth: (req,res,next) => {
-    res.send('seemingly ok');
-  },
   getQuestions: (req,res,next) => {
     const db = req.app.get('db');
     db.get_questions()
@@ -13,17 +10,12 @@ module.exports = {
         console.log(err);
       })
   },
-  getQuip: (req,res,next) => {
-    let quip = 'are you sure you want to keep lighting up my life? cause ';
-    quip += 'imma bouta make a lampshade out of your skin, since you won\'t be ';
-    quip += 'using it once I\'m done with you. ';
-    res.send(quip);
-  },
   addQuestion: (req,res,next) => {
     const db = req.app.get('db');
     db.add_question([
       req.body.text,
-      req.body.answer
+      req.body.answer,
+      req.body.author
     ])
       .then(r => {
         res.status(200).send();})
@@ -57,8 +49,5 @@ module.exports = {
       .catch(err => {
         res.status(500).send('get question failed, no delete attempted');
         console.log(err);})
-  },
-  getReact: (req,res,next) => {
-    res.sendFile(__dirname + '/build/index.html');
   }
 }
