@@ -1,5 +1,6 @@
 build
-node_modules 
+coverage
+node_modules
 heroku-notes.txt
 sql-notes.txt
 user-notes.txt
