@@ -27,6 +27,12 @@ app.get('/question/:id', qc.getQuestion);
 
 app.delete('/question/:id', qc.deleteQuestion);
 
+app.get('/quiz/questions', qc.getQuizQuestions);
+
+app.get('/quiz/question/:id', qc.getQuizQuestion);
+
+app.post('/quiz/response', qc.checkQuizResponse);
+
 app.get('/users', uc.getUsers);
 
 app.post('/user', uc.postUser);
