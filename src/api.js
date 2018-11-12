@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api_address = "http://localhost:8080/";
+const api_address = "/";
 
 const err = err => console.error(err);
 const r = r => {

@@ -71,7 +71,12 @@ module.exports = {
     db.check_quiz_response([req.body.q_id,req.body.answer])
       .then(r => {
         let a = !!r.length;
-        db.log_ask([req.body.q_id,req.body.u_id,a,req.body.time])
+        db.log_ask([
+          req.body.q_id,
+          req.body.u_id,
+          a,
+          req.body.time,
+          req.body.answer])
           .then(r => {
             res.status(a ? 200 : 500).send(a ? 'great job!' : 'wrong answer');
           })

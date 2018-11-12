@@ -6,6 +6,7 @@ const uc = require('./controllers/user-controller');
 const massive = require('massive');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
+const session = require('express-session');
 
 const app = express();
 app.use(bodyParser.json());
@@ -16,6 +17,13 @@ massive(process.env.DBURI)
     app.set('db',db);})
   .catch(err => {
     console.log(err);})
+
+app.use(session({
+  secret: process.env.SEC,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
 
 app.use(express.static('./build'));
 
@@ -42,6 +50,12 @@ app.get('/user/:id', uc.getUser);
 app.delete('/user/:id', uc.deleteUser);
 
 app.post('/user-login',uc.authenticateUser);
+
+app.get('/session',nc.getSession);
+
+app.post('/logout',nc.logout);
+
+app.post('/api/auth/logout',nc.logout);
 
 app.get('/health', nc.getHealth);
 
