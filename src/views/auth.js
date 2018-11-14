@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { setUserId } from '../redux/reducer';
+import { setUserId,loginInfo } from '../redux/reducer';
 import {
   authenticateUser,
-  postUser
+  postUser,
+  logout
 } from '../api';
 
 class Auth extends Component{
@@ -27,8 +28,14 @@ class Auth extends Component{
       .then(r => {
         console.log(r);
         if(r[0]){
-          this.setState({loggedin: true, userid: r[0].id});
-          this.props.setUserId(this.state.userid);
+          this.props.setUserId(r[0].id);
+          this.props.loginInfo(r[0].username,r[0].profile_pic);
+          this.setState({
+            username: '',
+            password: '',
+            loggedin: true,
+            userid: r[0].id
+          });
         } else {
           console.log('try again');
         }
@@ -43,8 +50,20 @@ class Auth extends Component{
       })
   }
 
+  handleLogout = () => {
+    logout()
+      .then(r => {
+        this.props.setUserId(null);
+        this.props.loginInfo('','');
+        this.setState({loggedin: false, userid: null});
+      })
+      .catch(err => {
+        console.error(err);
+      })
+  }
+
   render(){
-    if(!this.state.loggedin){
+    if(!this.props.username){
       return (
         <div className="auth">
           <div className="auth-inputs">
@@ -67,7 +86,7 @@ class Auth extends Component{
       )
     } else {
       return (
-        <button onClick={() => this.setState({loggedin: false, userid: null})}>
+        <button onClick={this.handleLogout}>
           log out
         </button>
       )
@@ -77,11 +96,16 @@ class Auth extends Component{
 }
 
 const mapStateToProps = state => {
-  return {}
+  return {
+    username: state.username,
+    profile_pic: state.profile_pic,
+    user_id: state.user_id
+  }
 }
 
 const mapDispatchToProps = {
-  setUserId
+  setUserId,
+  loginInfo
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Auth);

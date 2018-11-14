@@ -8,6 +8,18 @@ const r = r => {
   return r.data;
 };
 
+export function get(what){
+  return axios.get(`${api_address}${what}`)
+    .then(r)
+    .catch(err)
+}
+
+export function getSession(){
+  return axios.get(`${api_address}session`)
+    .then(r)
+    .catch(err)
+}
+
 export function getHealth(){
   return axios.get(`${api_address}health`)
     .then(r)
@@ -91,22 +103,45 @@ export function getQuizQuestions(){
 }
 
 export function getQuizQuestion(id){
-  console.log('tryna get quiz question');
   return axios.get(`${api_address}quiz/question/${id}`)
     .then(r)
     .catch(err)
 }
 
-export function checkQuizResponse(q_id,u_id,answer,time){
-  console.log(`q_id: ${q_id}`);
-  console.log(`u_id: ${u_id}`);
-  console.log(`answer: ${answer}`);
-  console.log(`time: ${time}`);
+export function checkQuizResponse(q_id,answer,time){
   return axios.post(`${api_address}quiz/response`,{
     q_id: q_id,
-    u_id: u_id,
     answer: answer,
     time: time
+  })
+    .then(r)
+    .catch(err)
+}
+
+export function getApiAuthMe(){
+  return axios.get(`${api_address}api/auth/me`)
+    .then(r)
+    .catch(err)
+}
+
+export function logout(){
+  console.log('in the api file');
+  console.log('about to log out');
+  return axios.post(`${api_address}api/auth/logout`,{})
+    .then(r)
+    .catch(err)
+}
+
+export function getMC(){
+  return axios.get(`${api_address}mc-quiz/new-question`)
+    .then(r)
+    .catch(err)
+}
+
+export function submitSelection(id,choice){
+  return axios.post(`${api_address}mc-quiz/submit-choice`,{
+    id: id,
+    choice: choice
   })
     .then(r)
     .catch(err)

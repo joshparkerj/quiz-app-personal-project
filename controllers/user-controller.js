@@ -14,6 +14,8 @@ module.exports = {
                 req.body.username
               ])
                 .then(user => {
+                  req.session.userid = user[0].id;
+                  user.sessionUserId = req.session.userid;
                   res.status(200).send(user);
                 })
                 .catch(err => {
@@ -86,5 +88,18 @@ module.exports = {
       .catch(err => {
         res.status(500).send('get user failed, no delete attempted');
         console.log(err);})
+  },
+  getApiAuthMe: (req,res,next) => {
+    console.log('tryna get api auth me...');
+    console.log(req.session.userid);
+    const db = req.app.get('db');
+    db.get_user([req.session.userid])
+      .then(r => {
+        console.log(r);
+        res.status(200).send(r);
+      })
+      .catch(err => {
+        res.status(500).send('get api auth me failed');
+      })
   }
 }

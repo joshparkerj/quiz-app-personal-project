@@ -1,3 +1,9 @@
+const r = (status,res) => {
+  return r => {
+    res.status(status).send(r);
+  }
+}
+
 const err = (message,res) => {
   return err => {
     res.status(500).send(message);
@@ -9,9 +15,7 @@ module.exports = {
   getQuestions: (req,res,next) => {
     const db = req.app.get('db');
     db.get_questions()
-      .then(r => {
-        res.status(200).send(r);
-      })
+      .then(r(200,res))
       .catch(err('get questions failed',res))
   },
   addQuestion: (req,res,next) => {
@@ -21,8 +25,7 @@ module.exports = {
       req.body.answer,
       req.body.author
     ])
-      .then(r => {
-        res.status(200).send();})
+      .then(r(200,res))
       .catch(err('add question failed',res))
   },
   getQuestion: (req,res,next) => {
@@ -49,9 +52,7 @@ module.exports = {
   getQuizQuestions: (req,res,next) => {
     const db = req.app.get('db');
     db.get_quiz_questions()
-      .then(questions => {
-        res.status(200).send(questions);
-      })
+      .then(r(200,res))
       .catch(err('get quiz questions failed',res))
   },
   getQuizQuestion: (req,res,next) => {
@@ -64,16 +65,16 @@ module.exports = {
   },
   checkQuizResponse: (req,res,next) => {
     const db = req.app.get('db');
+    console.log('tryna check quiz response');
     console.log(req.body.q_id);
-    console.log(req.body.u_id);
     console.log(req.body.answer);
-    console.log(req.body.time);
     db.check_quiz_response([req.body.q_id,req.body.answer])
       .then(r => {
         let a = !!r.length;
+        console.log(req.session.userid);
         db.log_ask([
           req.body.q_id,
-          req.body.u_id,
+          req.session.userid,
           a,
           req.body.time,
           req.body.answer])

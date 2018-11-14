@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { checkQuizResponse } from '../../api';
+import { toast } from 'react-toastify';
 
 class ResponseForm extends Component{
 
@@ -23,9 +24,13 @@ class ResponseForm extends Component{
   click = () => {
     checkQuizResponse(
       this.props.id,
-      this.props.user_id,
       this.state.res,
       Date.now()-this.state.start).then(r => {
+        if (r==='great job!'){
+          toast.success('Nice job, smarty-pants! That\'s right!');
+        } else {
+          toast.error('Keep Practicing! That answer was wrong!')
+        }
         console.log(r);
         this.props.done();
       })
