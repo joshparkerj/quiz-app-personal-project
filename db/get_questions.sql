@@ -1,1 +1,2 @@
-SELECT * FROM question;
+SELECT * FROM question
+LIMIT 10;

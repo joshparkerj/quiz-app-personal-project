@@ -5,6 +5,7 @@ const qc = require('./controllers/question-controller');
 const uc = require('./controllers/user-controller');
 const quipc = require('./controllers/quip-controller');
 const mc = require('./controllers/mc-controller');
+const sc = require('./controllers/scrape-controller');
 const massive = require('massive');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
@@ -46,6 +47,8 @@ app.post('/quiz/response', qc.checkQuizResponse);
 app.get('/mc-quiz/new-question',mc.getUnansweredMultipleChoiceQuestion);
 
 app.post('/mc-quiz/submit-choice',mc.checkSubmission);
+
+app.get('/questions/mc/new/scrape/:term',sc.scrapeWiki);
 
 app.get('/users', uc.getUsers);
 

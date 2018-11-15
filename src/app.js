@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './app.css';
 import Routes from './routes';
-import { Link } from 'react-router-dom';
 import { getApiAuthMe,getSession } from './api';
 import { connect } from 'react-redux';
 import { loginInfo } from './redux/reducer';
@@ -72,8 +71,6 @@ class App extends Component {
         <button onClick={this.handleSession}>
           See session info.
         </button>
-        <Link to="/admin">Administrator page</Link>
-        <Link to="/quiz">Quiz page</Link>
         <Routes />
       </div>
     )

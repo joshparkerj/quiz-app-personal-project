@@ -146,3 +146,9 @@ export function submitSelection(id,choice){
     .then(r)
     .catch(err)
 }
+
+export function scrapeWiki(term){
+  return axios.get(`${api_address}questions/mc/new/scrape/${term}`)
+    .then(r)
+    .catch(err)
+}

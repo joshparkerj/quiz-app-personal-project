@@ -7,7 +7,8 @@ import Auth from '../auth';
 import {
     getQuestions,
     deleteQuestion,
-    addQuestion
+    addQuestion,
+    scrapeWiki
   } from '../../api';
 
 class Admin extends Component {
@@ -20,6 +21,7 @@ class Admin extends Component {
       submissionForm: false,
       newText: '',
       newAnswer: '',
+      name: ''
     }
   }
 
@@ -117,12 +119,27 @@ class Admin extends Component {
     this.setState({submissionForm: true});
   }
 
+  scrape = () => {
+    scrapeWiki(this.state.term)
+      .then(r => {
+        this.setState({
+          term: ''
+        })
+      })
+  }
+
   render() {
     return (
       <div className="admin">
         <Auth />
         <h1>Quiz Site</h1>
         <button onClick={this.showForm}>add new question</button>
+        <input 
+          onChange={this.handleChange} 
+          name="term" 
+          value={this.state.term} 
+        />
+        <button onClick={this.scrape}>Scrape Wiki</button>
         <Questions
           mapper={this.questionMapper}
           questions={this.state.questions}
