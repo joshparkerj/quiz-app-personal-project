@@ -51,18 +51,20 @@ module.exports = {
       getCategory(req.params.term)
         .then(output => {
             Promise.all(output.map(e => {
-                db.add_mc_question([
-                    e.text,
-                    e.answer,
-                    req.params.term
-                ])
-                .then(r => {
-                    return r;
-                })
-                .catch(err => {
-                    console.log(err);
-                    return r;
-                })
+                if(e.text.includes('********')){
+                    db.add_mc_question([
+                        e.text,
+                        e.answer,
+                        req.params.term
+                    ])
+                    .then(r => {
+                        return r;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        return r;
+                    })
+                }
             }))})
         .then(r => {
             res.status(200).send(r);
