@@ -4,6 +4,7 @@ import Admin from './views/admin/admin';
 import Splash from './views/splash';
 import Quiz from './views/quiz/quiz';
 import MultipleChoice from './views/mc/multiple-choice';
+import WikiQuiz from './views/wiki/wiki-quiz';
 
 export default function Routes(props){
   return (
@@ -11,10 +12,12 @@ export default function Routes(props){
       <Link to="/admin">Administrator page</Link>
       <Link to="/quiz">Quiz page</Link>
       <Link to="/mc">Multiple Choice Quiz</Link>
+      <Link to="/wiki">Questions from Wikipedia</Link>
       <Switch>
         <Route path="/admin" component={Admin} />
         <Route path="/quiz" component={Quiz} />
         <Route path="/mc" component={MultipleChoice} />
+        <Route path="/wiki" component={WikiQuiz} />
         <Route exact path="/" component={Splash} />
       </Switch>
     </div>

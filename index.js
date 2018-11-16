@@ -6,6 +6,7 @@ const uc = require('./controllers/user-controller');
 const quipc = require('./controllers/quip-controller');
 const mc = require('./controllers/mc-controller');
 const sc = require('./controllers/scrape-controller');
+const wc = require('./controllers/wiki-controller');
 const massive = require('massive');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
@@ -49,6 +50,14 @@ app.get('/mc-quiz/new-question',mc.getUnansweredMultipleChoiceQuestion);
 app.post('/mc-quiz/submit-choice',mc.checkSubmission);
 
 app.get('/questions/mc/new/scrape/:term',sc.scrapeWiki);
+
+app.get('/wiki-quiz/new-question/:category',wc.getWikiMCbyCat);
+
+app.get('/wiki-quiz/new-question',wc.getWikiMC)
+
+app.post('/wiki-quiz/submit-choice',wc.checkSubmission);
+
+app.get('/wiki-quiz/categories',wc.getWikiCategories);
 
 app.get('/users', uc.getUsers);
 

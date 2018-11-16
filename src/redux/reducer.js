@@ -4,9 +4,12 @@ const initState = {
   profile_pic: ''
 }
 
+const SET_USER_ID = "SET_USER_ID";
+const LOGIN_INFO = "LOGIN_INFO";
+
 export const setUserId = id => {
   return {
-    type: "SET_USER_ID",
+    type: SET_USER_ID,
     payload: {
       user_id: id
     }
@@ -15,7 +18,7 @@ export const setUserId = id => {
 
 export const loginInfo = (name,pic) => {
   return {
-    type: "LOGIN_INFO",
+    type: LOGIN_INFO,
     payload: {
       username: name,
       profile_pic: pic
@@ -25,12 +28,12 @@ export const loginInfo = (name,pic) => {
 
 const reducer = (state=initState, actions) => {
   switch(actions.type){
-    case "SET_USER_ID":
+    case SET_USER_ID:
       return {
         ...state,
         user_id: actions.payload.user_id
       }
-    case "LOGIN_INFO":
+    case LOGIN_INFO:
       return {
         ...state,
         username: actions.payload.username,

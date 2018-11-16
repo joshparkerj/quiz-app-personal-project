@@ -152,3 +152,30 @@ export function scrapeWiki(term){
     .then(r)
     .catch(err)
 }
+
+export function getWikiMC(){
+  return axios.get(`${api_address}wiki-quiz/new-question`)
+    .then(r)
+    .catch(err)
+}
+
+export function getWikiMCbyCat(category){
+  return axios.get(`${api_address}wiki-quiz/new-question/${category}`)
+    .then(r)
+    .catch(err)
+}
+
+export function wikiSelection(id,choice){
+  return axios.post(`${api_address}wiki-quiz/submit-choice`,{
+    id: id,
+    choice: choice
+  })
+    .then(r)
+    .catch(err)
+}
+
+export function getWikiCategories(){
+  return axios.get(`${api_address}wiki-quiz/categories`)
+    .then(r)
+    .catch(err)
+}

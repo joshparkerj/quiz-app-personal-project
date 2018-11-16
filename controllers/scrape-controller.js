@@ -6,7 +6,10 @@ const cat = 'Category:'
 const getPage = title => {
     return axios.get(`${url}${title}`)
         .then(r => {
-            return $('.mw-parser-output p', r.data).first().text();
+            return {
+                text: $('.mw-parser-output p', r.data).first().text(),
+                img_url: $('.infobox img', r.data).first().attr('src')
+            };
         })
         .catch(err => {
             console.error(err);
@@ -25,16 +28,16 @@ const getCategory = term => {
         return Promise.all(
             list.map(e => {
                 return getPage(e.attribs.href.slice(6));
-            })
-        )
+            }))
     })
     .then(res => {
         let output = res.map((e,i) => {
             let a = list[i].attribs.href.slice(6).replace(/_/g,' ');
-            let are = new RegExp(a.replace(/ /g,'.'),'gi');
+            let are = new RegExp(a.replace(/ /g,'.{0,8}'),'gi');
             console.log(are);
             return {
-                text: e.replace(are,'********'),
+                text: e.text.replace(are,'********').replace(/\[..?\]/g,''),
+                img_url: `https://${e.img_url}`,
                 answer: a
             }
         });
@@ -52,8 +55,9 @@ module.exports = {
         .then(output => {
             Promise.all(output.map(e => {
                 if(e.text.includes('********')){
-                    db.add_mc_question([
+                    db.add_wiki_question([
                         e.text,
+                        e.img_url,
                         e.answer,
                         req.params.term
                     ])
@@ -62,7 +66,7 @@ module.exports = {
                     })
                     .catch(err => {
                         console.log(err);
-                        return r;
+                        return err;
                     })
                 }
             }))})
