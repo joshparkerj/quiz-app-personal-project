@@ -3,7 +3,6 @@ import Question from './question';
 import Questions from '../questions';
 import Delete from './delete';
 import NewQuestion from './newquestion';
-import Auth from '../auth';
 import {
     getQuestions,
     deleteQuestion,
@@ -131,13 +130,12 @@ class Admin extends Component {
   render() {
     return (
       <div className="admin">
-        <Auth />
         <h1>Quiz Site</h1>
         <button onClick={this.showForm}>add new question</button>
-        <input 
-          onChange={this.handleChange} 
-          name="term" 
-          value={this.state.term} 
+        <input
+          onChange={this.handleChange}
+          name="term"
+          value={this.state.term}
         />
         <button onClick={this.scrape}>Scrape Wiki</button>
         <Questions

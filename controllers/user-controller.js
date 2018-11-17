@@ -2,6 +2,9 @@ const bc = require('./bcrypt-controller');
 
 module.exports = {
   authenticateUser: (req,res,next) => {
+    console.log('tryna authenticate user...');
+    console.log(req.body.username);
+    console.log(req.body.password);
     const db = req.app.get('db');
     db.get_hash([
       req.body.username

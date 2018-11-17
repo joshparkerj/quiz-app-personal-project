@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import Auth from '../auth';
 import Question from './question';
 import Questions from '../questions';
 import ResponseForm from './response-form';
-import { connect } from 'react-redux';
 import {
   getQuizQuestions,
   getQuizQuestion
@@ -75,7 +73,6 @@ class Quiz extends Component {
   render() {
     return (
       <div className="quiz">
-        <Auth />
         {this.state.displayQuestion}
         <Questions
           mapper={this.questionMapper}
@@ -88,12 +85,4 @@ class Quiz extends Component {
 
 }
 
-const mapStateToProps = state => {
-  return {
-    user_id: state.user_id
-  }
-}
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Quiz);
+export default Quiz;

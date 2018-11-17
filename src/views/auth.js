@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { setUserId,loginInfo } from '../redux/reducer';
 import {
   authenticateUser,
   postUser,
   logout
 } from '../api';
+import { toast } from 'react-toastify';
 
 class Auth extends Component{
 
   constructor(){
     super();
     this.state = {
-      username: '',
-      password: '',
-      loggedin: false,
-      userid: null
+      usernameInput: '',
+      passwordInput: '',
     }
   }
 
@@ -24,38 +21,35 @@ class Auth extends Component{
   }
 
   login = () => {
-    authenticateUser(this.state.username,this.state.password)
+    console.log('tryna log in...');
+    console.log(this.state.usernameInput);
+    console.log(this.state.passwordInput);
+    authenticateUser(this.state.usernameInput,this.state.passwordInput)
       .then(r => {
-        console.log(r);
         if(r[0]){
-          this.props.setUserId(r[0].id);
-          this.props.loginInfo(r[0].username,r[0].profile_pic);
+          this.props.checkAuth();
           this.setState({
-            username: '',
-            password: '',
-            loggedin: true,
-            userid: r[0].id
+            usernameInput: '',
+            passwordInput: '',
           });
         } else {
-          console.log('try again');
+          toast.warn('try again');
         }
       })
   }
 
   register = () => {
-    postUser(this.state.username,this.state.password)
+    postUser(this.state.usernameInput,this.state.passwordInput)
       .then(r => {
         console.log(r);
-        console.log('now try logging in');
+        toast.success('now try logging in');
       })
   }
 
   handleLogout = () => {
     logout()
       .then(r => {
-        this.props.setUserId(null);
-        this.props.loginInfo('','');
-        this.setState({loggedin: false, userid: null});
+        this.props.checkAuth();
       })
       .catch(err => {
         console.error(err);
@@ -63,19 +57,19 @@ class Auth extends Component{
   }
 
   render(){
-    if(!this.props.username){
+    if(!this.props.loggedin){
       return (
         <div className="auth">
           <div className="auth-inputs">
             <label>Username:</label>
             <input
-              name="username"
-              value={this.state.username}
+              name="usernameInput"
+              value={this.state.usernameInput}
               onChange={this.handleChange} />
             <label>Password:</label>
             <input
-              name="password"
-              value={this.state.password}
+              name="passwordInput"
+              value={this.state.passwordInput}
               onChange={this.handleChange} />
           </div>
           <div className="auth-buttons">
@@ -95,17 +89,4 @@ class Auth extends Component{
 
 }
 
-const mapStateToProps = state => {
-  return {
-    username: state.username,
-    profile_pic: state.profile_pic,
-    user_id: state.user_id
-  }
-}
-
-const mapDispatchToProps = {
-  setUserId,
-  loginInfo
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Auth);
+export default Auth;

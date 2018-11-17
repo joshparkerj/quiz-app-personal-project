@@ -1,30 +1,36 @@
 import React, { Component } from 'react';
 import './app.css';
 import Routes from './routes';
+import Auth from './views/auth';
 import { getApiAuthMe,getSession } from './api';
-import { connect } from 'react-redux';
-import { loginInfo } from './redux/reducer';
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 class App extends Component {
 
+  constructor(){
+    super();
+    this.state = {
+      username: '',
+      profile_pic: '',
+      loggedin: false
+    }
+  }
+
   componentDidMount(){
-    console.log('app did mount');
+    this.checkAuth()
+  }
+
+  checkAuth = () => {
     getApiAuthMe()
       .then(r => {
-        console.log('got api auth me');
-        console.log(r);
-        console.log(r[0]);
         if (r && r[0]){
-          console.log('tryna store login info...');
-          console.log(r[0].username);
-          console.log(r[0].profile_pic);
-          this.props.loginInfo(
-            r[0].username,
-            r[0].profile_pic)
+          this.setState({
+            username: r[0].username,
+            profile_pic: r[0].profile_pic,
+            loggedin: true})
         } else {
-          this.props.loginInfo('','');
+          this.setState({username: '', profile_pic: '', loggedin: false});
         }
       })
       .catch(err => {
@@ -32,11 +38,11 @@ class App extends Component {
       })
   }
 
-  displayLoginStatus(){
-    if (this.props.username){
+  displayLoginStatus = () => {
+    if (this.state.username){
       return(
         <div className="logged-in">
-          Logged in as {this.props.username}
+          Logged in as {this.state.username}
         </div>
       )
     } else {
@@ -51,7 +57,6 @@ class App extends Component {
   handleSession = () => {
     getSession()
       .then(r => {
-        console.log(r);
         if (r.user){
           toast.success(`You're logged in! User ID: ${r.user}`)
         }else{
@@ -67,6 +72,7 @@ class App extends Component {
     return (
       <div className="app">
         <ToastContainer />
+        <Auth checkAuth={this.checkAuth} loggedin={this.state.loggedin} />
         {this.displayLoginStatus()}
         <button onClick={this.handleSession}>
           See session info.
@@ -78,15 +84,4 @@ class App extends Component {
 
 }
 
-const mapStateToProps = state => {
-  return {
-    username: state.username,
-    profile_pic: state.profile_pic
-  }
-}
-
-const mapDispatchToProps = {
-  loginInfo
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

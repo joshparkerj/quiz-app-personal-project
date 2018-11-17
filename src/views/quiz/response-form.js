@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { checkQuizResponse } from '../../api';
 import { toast } from 'react-toastify';
 
@@ -50,12 +49,5 @@ class ResponseForm extends Component{
 
 }
 
-const mapStateToProps = state => {
-  return {
-    user_id: state.user_id
-  }
-}
 
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ResponseForm);
+export default ResponseForm;
