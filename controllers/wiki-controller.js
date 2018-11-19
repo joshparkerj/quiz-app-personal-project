@@ -48,7 +48,7 @@ module.exports = {
             rts.answers = fyshuffle(rts.answers);
             res.status(200).send(rts);
           })
-          .catch(err('get mc answers failed'))
+          .catch(err('get mc answers failed',res))
       })
       .catch(err('get wiki mc failed',res))
   },
@@ -105,8 +105,51 @@ module.exports = {
             rts.answers = fyshuffle(rts.answers);
             res.status(200).send(rts);
           })
-          .catch(err('get mc answers failed'))
+          .catch(err('get mc answers failed',res))
       })
       .catch(err('get wiki mc failed',res))
+  },
+  createGame: (req,res,next) => {
+    const db = req.app.get('db');
+    const rts = [];
+    db.get_some_wiki_questions_by_category([
+      req.params.category,
+      req.params.count
+    ])
+      .then(r => {
+        if(!r.length){
+          res.status(404).send('no question found');
+          return;
+        }
+        if(r.length != req.params.count){
+          res.status(404).send('couldn\'t get that many questions');
+          return;
+        }
+        r.map((e,i) => {
+          rts[i] = {};
+          rts[i].id = e.id;
+          rts[i].text = e.text;
+          rts[i].answers = [e.answer];
+          rts[i].category = e.category;
+          rts[i].img_url = e.img_url;
+        })
+        return Promise.all(
+          rts.map(e => {
+            return db.get_more_wiki_answers([
+              e.id,
+              e.category,
+              3
+            ])
+          })
+        )
+      })
+    .then(r => {
+      rts.map((e,i) => {
+        r[i].forEach(f => e.answers.push(f.answer));
+        e.answers = fyshuffle(e.answers);
+      })
+      res.status(200).send(rts);
+    })
+    .catch(err('create game failed',res));
   }
 }

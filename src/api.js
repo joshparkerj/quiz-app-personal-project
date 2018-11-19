@@ -179,3 +179,9 @@ export function getWikiCategories(){
     .then(r)
     .catch(err)
 }
+
+export function createGame(category,count){
+  return axios.get(`${api_address}create-game/${category}/${count}`)
+    .then(r)
+    .catch(err)
+}

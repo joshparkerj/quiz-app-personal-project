@@ -18,6 +18,7 @@ module.exports = {
               ])
                 .then(user => {
                   req.session.userid = user[0].id;
+                  req.session.username = user[0].username;
                   user.sessionUserId = req.session.userid;
                   res.status(200).send(user);
                 })

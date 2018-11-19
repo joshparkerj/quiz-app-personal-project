@@ -77,7 +77,7 @@ class App extends Component {
         <button onClick={this.handleSession}>
           See session info.
         </button>
-        <Routes />
+        {this.state.loggedin ? <Routes /> : ''}
       </div>
     )
   }

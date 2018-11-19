@@ -7,12 +7,21 @@ const quipc = require('./controllers/quip-controller');
 const mc = require('./controllers/mc-controller');
 const sc = require('./controllers/scrape-controller');
 const wc = require('./controllers/wiki-controller');
+const sockc = require('./controllers/socket-controller');
 const massive = require('massive');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
 const session = require('express-session');
-
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const sesh = session({
+  secret: process.env.SEC,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {secure: false}
+});
+
 app.use(bodyParser.json());
 app.use(cors({origin: ['http://localhost:3000']}));
 
@@ -22,12 +31,11 @@ massive(process.env.DBURI)
   .catch(err => {
     console.log(err);})
 
-app.use(session({
-  secret: process.env.SEC,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
+app.use(sesh);
+
+io.use((socket,next) => {
+  sesh(socket.request, socket.request.res, next);
+})
 
 app.use(express.static('./build'));
 
@@ -52,6 +60,8 @@ app.post('/mc-quiz/submit-choice',mc.checkSubmission);
 app.get('/questions/mc/new/scrape/:term',sc.scrapeWiki);
 
 app.get('/wiki-quiz/new-question/:category',wc.getWikiMCbyCat);
+
+app.get('/create-game/:category/:count',wc.createGame);
 
 app.get('/wiki-quiz/new-question',wc.getWikiMC)
 
@@ -83,4 +93,6 @@ app.get('/quip', quipc.getQuip);
 
 app.get('*',nc.getReact);
 
-app.listen(process.env.PORT || 8080);
+io.on('connection',sockc.connect);
+
+http.listen(process.env.PORT || 8080);

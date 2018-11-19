@@ -46,7 +46,9 @@
     "react-scripts": "^2.1.1",
     "react-test-renderer": "^16.6.1",
     "react-toastify": "^4.4.2",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
   },
   "jest": {
     "moduleNameMapper": {
