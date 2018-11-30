@@ -19,7 +19,7 @@ const sesh = session({
   secret: process.env.SEC,
   resave: false,
   saveUninitialized: true,
-  cookie: {secure: false}
+  cookie: {secure: false, maxAge: 1000 * 60 * 60}
 });
 
 app.use(bodyParser.json());
