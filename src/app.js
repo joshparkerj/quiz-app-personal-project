@@ -1,36 +1,53 @@
 import React, { Component } from 'react';
 import './app.css';
-import Routes from './routes';
 import Auth from './views/auth';
-import { getApiAuthMe,getSession } from './api';
-import { toast,ToastContainer } from 'react-toastify';
+import Splash from './views/splash';
+import { getApiAuthMe, getSession } from './api';
+import { emitSocketQuery } from './socket-api';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+
+import Nav from './nav';
+// Components linked through Nav:
+import JoinCreate from './views/join-create';
+import Quiz from './views/quiz/quiz';
+import MultiWiki from './views/multi-wiki/multi-wiki';
+import MultipleChoice from './views/mc/multiple-choice';
+import Admin from './views/admin/admin';
 
 class App extends Component {
 
-  constructor(){
+  constructor() {
     super();
     this.state = {
       username: '',
       profile_pic: '',
-      loggedin: false
+      loggedin: false,
+      admin: false,
+      navSelection: null
     }
   }
 
-  componentDidMount(){
-    this.checkAuth()
+  componentDidMount() {
+    this.checkAuth();
+    this.props.osq(response => {
+      console.log(response);
+      toast.success(`socket nickname is: ${response}`);
+    })
   }
 
   checkAuth = () => {
     getApiAuthMe()
       .then(r => {
-        if (r && r[0]){
+        if (r && r[0]) {
           this.setState({
             username: r[0].username,
             profile_pic: r[0].profile_pic,
-            loggedin: true})
+            loggedin: true,
+            admin: r[0].privilege_level > 0
+          })
         } else {
-          this.setState({username: '', profile_pic: '', loggedin: false});
+          this.setState({ username: '', profile_pic: '', loggedin: false });
         }
       })
       .catch(err => {
@@ -39,8 +56,8 @@ class App extends Component {
   }
 
   displayLoginStatus = () => {
-    if (this.state.username){
-      return(
+    if (this.state.username) {
+      return (
         <div className="logged-in">
           Logged in as {this.state.username}
         </div>
@@ -57,15 +74,39 @@ class App extends Component {
   handleSession = () => {
     getSession()
       .then(r => {
-        if (r.user){
+        if (r.user) {
           toast.success(`You're logged in! User ID: ${r.user}`)
-        }else{
+        } else {
           toast.warn(`Not logged in! Session ID: ${r.sessionID}`)
         }
       })
       .catch(err => {
         console.error(err);
       })
+  }
+
+  handleSocket = () => {
+    emitSocketQuery()
+  }
+
+  handleClick = selection => {
+    this.setState({ navSelection: selection });
+  }
+
+  renderNavSelection = () => {
+    if (this.state.navSelection === 'join-create') {
+      return <JoinCreate />
+    } else if (this.state.navSelection === 'quiz') {
+      return <Quiz />
+    } else if (this.state.navSelection === 'multi-wiki') {
+      return <MultiWiki />
+    } else if (this.state.navSelection === 'mc') {
+      return <MultipleChoice />
+    } else if (this.state.navSelection === 'admin-pages') {
+      return <Admin />
+    } else {
+      return <Splash />
+    }
   }
 
   render() {
@@ -77,11 +118,17 @@ class App extends Component {
         <button onClick={this.handleSession}>
           See session info.
         </button>
-        {this.state.loggedin ? <Routes /> : ''}
+        <button onClick={this.handleSocket}>
+          See socket info.
+        </button>
+        <Nav
+          loggedIn={this.state.loggedin}
+          admin={this.state.admin}
+          hc={this.handleClick} />
+        {this.state.loggedin ? this.renderNavSelection() : <Splash />}
       </div>
     )
   }
-
 }
 
 export default App;

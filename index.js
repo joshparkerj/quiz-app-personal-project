@@ -63,6 +63,8 @@ app.get('/wiki-quiz/new-question/:category',wc.getWikiMCbyCat);
 
 app.get('/create-game/:category/:count',wc.createGame);
 
+app.post('/question-answered/:id',wc.questionAnswered);
+
 app.get('/wiki-quiz/new-question',wc.getWikiMC)
 
 app.post('/wiki-quiz/submit-choice',wc.checkSubmission);

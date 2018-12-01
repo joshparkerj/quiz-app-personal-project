@@ -1,13 +1,10 @@
 import React from 'react';
 import App from './app';
 import renderer from 'react-test-renderer';
-import { BrowserRouter } from 'react-router-dom';
 
-function TestComponent(props){
+function TestComponent(props) {
   return (
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <App />
   )
 }
 

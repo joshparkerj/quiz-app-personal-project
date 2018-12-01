@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
-import { BrowserRouter } from 'react-router-dom';
+import { onSocketQuery } from './socket-api.js';
 
 ReactDOM.render(
-  <BrowserRouter><App /></BrowserRouter>
+  <App osq={onSocketQuery} />
   , document.getElementById('root')
 );

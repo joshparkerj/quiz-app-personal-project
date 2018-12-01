@@ -4,6 +4,9 @@ import {
   postUser,
   logout
 } from '../api';
+import {
+  emitLogIn
+} from '../socket-api';
 import { toast } from 'react-toastify';
 
 class Auth extends Component{
@@ -28,6 +31,7 @@ class Auth extends Component{
       .then(r => {
         if(r[0]){
           this.props.checkAuth();
+          emitLogIn(this.state.usernameInput);
           this.setState({
             usernameInput: '',
             passwordInput: '',

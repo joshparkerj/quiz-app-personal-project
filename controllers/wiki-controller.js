@@ -1,10 +1,10 @@
-const r = (status,res) => {
+const r = (status, res) => {
   return r => {
     res.status(status).send(r);
   }
 }
 
-const err = (message,res) => {
+const err = (message, res) => {
   return err => {
     res.status(500).send(message);
     console.log(err);
@@ -14,7 +14,7 @@ const err = (message,res) => {
 const fyshuffle = a => {
   var j, x, i;
   for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i+1));
+    j = Math.floor(Math.random() * (i + 1));
     x = a[i];
     a[i] = a[j];
     a[j] = x;
@@ -23,13 +23,13 @@ const fyshuffle = a => {
 }
 
 module.exports = {
-  getWikiMC: (req,res,next) => {
+  getWikiMC: (req, res, next) => {
     const db = req.app.get('db');
     const rts = {};
     db.get_new_wiki_question([req.session.userid])
       .then(r => {
         let f = r.length;
-        if(!f){
+        if (!f) {
           res.status(404).send('nothing found');
           return;
         }
@@ -48,16 +48,16 @@ module.exports = {
             rts.answers = fyshuffle(rts.answers);
             res.status(200).send(rts);
           })
-          .catch(err('get mc answers failed',res))
+          .catch(err('get mc answers failed', res))
       })
-      .catch(err('get wiki mc failed',res))
+      .catch(err('get wiki mc failed', res))
   },
-  checkSubmission: (req,res,next) => {
+  checkSubmission: (req, res, next) => {
     const db = req.app.get('db');
     console.log('tryna check submission...');
     console.log(req.body.id);
     console.log(req.body.choice);
-    db.check_wiki_submission([req.body.id,req.body.choice])
+    db.check_wiki_submission([req.body.id, req.body.choice])
       .then(r => {
         let a = !!r.length;
         db.log_ask([
@@ -67,18 +67,18 @@ module.exports = {
           0,
           req.body.choice])
           .then(r => {
-            res.status(a ? 200 : 500).send(a ? 'correct' : 'wrong')})
+            res.status(a ? 200 : 500).send(a ? 'correct' : 'wrong')
           })
-          .catch(err('record keeping failed',res))
-      .catch(err('check submission failed',res))
+      })
+      .catch(err('check submission failed', res))
   },
-  getWikiCategories: (req,res,next) => {
+  getWikiCategories: (req, res, next) => {
     const db = req.app.get('db');
     db.get_wiki_categories()
-      .then(r(200,res))
-      .catch(err('get wiki categories failed',res))
+      .then(r(200, res))
+      .catch(err('get wiki categories failed', res))
   },
-  getWikiMCbyCat: (req,res,next) => {
+  getWikiMCbyCat: (req, res, next) => {
     const db = req.app.get('db');
     const rts = {};
     db.get_new_wiki_question_by_category([
@@ -86,7 +86,7 @@ module.exports = {
       req.params.category
     ])
       .then(r => {
-        if(!r.length){
+        if (!r.length) {
           res.status(404).send('no question found');
           return;
         }
@@ -105,11 +105,30 @@ module.exports = {
             rts.answers = fyshuffle(rts.answers);
             res.status(200).send(rts);
           })
-          .catch(err('get mc answers failed',res))
+          .catch(err('get mc answers failed', res))
       })
-      .catch(err('get wiki mc failed',res))
+      .catch(err('get wiki mc failed', res))
   },
-  createGame: (req,res,next) => {
+  questionAnswered: (req, res, next) => {
+    console.log('question answered...');
+    if (req.session.game.some(e => e.id == req.params.id)) {
+      console.log('found id...');
+      console.log(req.session.game.length);
+      req.session.game = req.session.game.filter(e => {
+        return e.id !== req.params.id;
+      })
+      console.log(req.session.game.length);
+      req.session.gamescore += 1;
+      res.status(200).send({ score: req.session.gamescore });
+    } else {
+      console.log('found no id...');
+      res.status(500).send('invalid id');
+    }
+  },
+  createGame: (req, res, next) => {
+    console.log('creating game...');
+    console.log(req.params.category);
+    console.log(req.params.count);
     const db = req.app.get('db');
     const rts = [];
     db.get_some_wiki_questions_by_category([
@@ -117,15 +136,15 @@ module.exports = {
       req.params.count
     ])
       .then(r => {
-        if(!r.length){
+        if (!r.length) {
           res.status(404).send('no question found');
           return;
         }
-        if(r.length != req.params.count){
+        if (r.length != req.params.count) {
           res.status(404).send('couldn\'t get that many questions');
           return;
         }
-        r.map((e,i) => {
+        r.map((e, i) => {
           rts[i] = {};
           rts[i].id = e.id;
           rts[i].text = e.text;
@@ -143,13 +162,17 @@ module.exports = {
           })
         )
       })
-    .then(r => {
-      rts.map((e,i) => {
-        r[i].forEach(f => e.answers.push(f.answer));
-        e.answers = fyshuffle(e.answers);
+      .then(r => {
+        rts.map((e, i) => {
+          r[i].forEach(f => e.answers.push(f.answer));
+          e.answers = fyshuffle(e.answers);
+        })
+        req.session.game = rts;
+        console.log('saved game to session:');
+        req.session.gamescore = 0;
+        console.log(rts);
+        res.status(200).send(rts);
       })
-      res.status(200).send(rts);
-    })
-    .catch(err('create game failed',res));
+      .catch(err('create game failed', res));
   }
 }

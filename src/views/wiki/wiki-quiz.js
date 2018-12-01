@@ -5,12 +5,12 @@ import {
   wikiSelection,
   getWikiCategories
 } from '../../api';
-import Option from './option';
 import { toast } from 'react-toastify';
+import WikiMC from './wiki-mc';
 
 class WikiQuiz extends Component {
 
-  constructor(){
+  constructor() {
     super();
     this.state = {
       wikiText: '',
@@ -24,13 +24,13 @@ class WikiQuiz extends Component {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     console.log('Wiki Quiz Component Did Mount');
     getWikiMC()
       .then(mc => {
         console.log('Got Wiki MC');
         console.log(mc);
-        if(mc && mc.text){
+        if (mc && mc.text) {
           this.setState({
             wikiText: mc.text,
             wikiID: mc.id,
@@ -52,10 +52,10 @@ class WikiQuiz extends Component {
   }
 
   hc = e => {
-    wikiSelection(this.state.wikiID,e)
+    wikiSelection(this.state.wikiID, e)
       .then(r => {
         console.log(r);
-        if(r==='correct'){
+        if (r === 'correct') {
           toast.success('well done');
         } else {
           toast.error('that was very bad');
@@ -64,7 +64,7 @@ class WikiQuiz extends Component {
       .then(r => {
         getWikiMCbyCat(this.state.category)
           .then(mc => {
-            if(mc && mc.text){
+            if (mc && mc.text) {
               this.setState({
                 wikiText: mc.text,
                 wikiID: mc.id,
@@ -80,24 +80,27 @@ class WikiQuiz extends Component {
       })
   }
 
-  optionMapper = (e,i) => {
-    return (
-      <Option
-        hc={this.hc}
-        key={i}
-        text={e}
-      />
-    )
-  }
-
-  categoryMapper = (e,i) => {
+  categoryMapper = (e, i) => {
     return <option value={e.category} key={i}>{e.category}</option>
   }
 
-  handleChange = e => this.setState({category: e.target.value})
+  handleChange = e => {
+    const etv = e.target.value
+    getWikiMCbyCat(etv)
+      .then(mc => {
+        this.setState({
+          category: etv,
+          wikiText: mc.text,
+          wikiID: mc.id,
+          wikiAnswers: mc.answers,
+          wikiCategory: mc.category,
+          imgUrl: mc.img_url
+        })
+      })
+  }
 
   displayQuestion = () => {
-    if (this.state.wikiText && this.state.wikiAnswers.length > 0){
+    if (this.state.wikiText && this.state.wikiAnswers.length > 0) {
       return (
         <div className="multiple-choice-question">
           <select
@@ -107,14 +110,11 @@ class WikiQuiz extends Component {
           >
             {this.state.categories.map(this.categoryMapper)}
           </select>
-          <img
-            className="image-from-wiki"
-            src={this.state.imgUrl || '/no_image.png'}
-            alt="hope this helps!"
-            onError={i => i.target.src = '/no_image.png'}
-          />
-          {this.state.wikiText}
-          {this.state.wikiAnswers.map(this.optionMapper)}
+          <WikiMC
+            wikiText={this.state.wikiText}
+            wikiAnswers={this.state.wikiAnswers}
+            imgUrl={this.state.imgUrl}
+            hc={this.hc} />
         </div>
       )
     } else {

@@ -185,3 +185,9 @@ export function createGame(category,count){
     .then(r)
     .catch(err)
 }
+
+export function questionAnswered(id){
+  return axios.post(`${api_address}question-answered/${id}`)
+    .then(r)
+    .catch(err)
+}
