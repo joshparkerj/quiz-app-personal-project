@@ -125,8 +125,6 @@ export function getApiAuthMe(){
 }
 
 export function logout(){
-  console.log('in the api file');
-  console.log('about to log out');
   return axios.post(`${api_address}api/auth/logout`,{})
     .then(r)
     .catch(err)
@@ -188,6 +186,14 @@ export function createGame(category,count){
 
 export function questionAnswered(id){
   return axios.post(`${api_address}question-answered/${id}`)
+    .then(r)
+    .catch(err)
+}
+
+export function setGameOnSession(game){
+  return axios.post(`${api_address}setgameonsession`,{
+    game: game
+  })
     .then(r)
     .catch(err)
 }

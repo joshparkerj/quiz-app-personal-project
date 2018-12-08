@@ -3,10 +3,19 @@ import {
   createGame,
   getWikiCategories,
   wikiSelection,
-  questionAnswered
+  questionAnswered,
+  setGameOnSession
 } from '../api';
 import {
-  emitCreateGame
+  emitCreateGame,
+  emitFindGame,
+  emitJoinGame,
+  emitAnswerQuestion,
+  onGamesFound,
+  onJoinRoom,
+  onGameInfo,
+  onAnswerQuestion,
+  refreshConnection
 } from '../socket-api';
 import { toast } from 'react-toastify';
 import WikiMC from './wiki/wiki-mc';
@@ -20,11 +29,45 @@ class JoinCreate extends Component {
       category: '',
       categories: [],
       game: [],
-      gamename: ''
+      gamelist: [],
+      gamename: '',
+      findGameHeading: ''
     }
   }
 
   componentDidMount() {
+    refreshConnection();
+    onGamesFound(gamelist => {
+      if (gamelist.length > 0) {
+        this.setState({ gamelist: gamelist, findGameHeading: 'Games found:' })
+      } else {
+        this.setState({ findGameHeading: 'No games found...' });
+      }
+    })
+    onJoinRoom(msg => {
+      toast.success(`${msg.n} has joined your game!`)
+    })
+    onGameInfo(game => {
+      this.setState({ game: game.content });
+      setGameOnSession(game.content);
+    })
+    onAnswerQuestion(msg => {
+      if (msg.n !== this.props.username) {
+        toast.error(
+          `${msg.n} has answered a question!\nTheir score is now ${msg.s}!`);
+        if (this.state.game.length === 1) {
+          toast.error('The game is over!');
+        }
+        setGameOnSession(this.state.game.filter(e => {
+          return e.id !== msg.q;
+        }))
+        this.setState({
+          game: this.state.game.filter(e => {
+            return e.id !== msg.q;
+          })
+        })
+      }
+    })
     getWikiCategories()
       .then(cats => {
         this.setState({
@@ -42,23 +85,22 @@ class JoinCreate extends Component {
 
   hc = wikiID => {
     return e => {
-      console.log(wikiID);
-      console.log(e);
       wikiSelection(wikiID, e)
         .then(r => {
           console.log(r);
           if (r === 'correct') {
-            toast.success('well done');
             questionAnswered(wikiID)
               .then(r => {
-                toast.success(`your score is now ${r.score}`);
-                if (this.state.game.length === 1) {
+                const game = this.state.game.filter(e => {
+                  return e.id !== wikiID;
+                })
+                toast.success(`well done\nyour score is now ${r.score}`);
+                emitAnswerQuestion(wikiID);
+                if (game.length === 0) {
                   toast.success('you\'ve finished the game!');
                 }
                 this.setState({
-                  game: this.state.game.filter(e => {
-                    return e.id !== wikiID;
-                  })
+                  game: game
                 });
               })
           } else {
@@ -83,12 +125,22 @@ class JoinCreate extends Component {
     )
   }
 
+  joinGame = host => {
+    emitJoinGame(host);
+  }
+
+  gamelistmapper = (e, i) => {
+    return (
+      <button key={i} onClick={() => this.joinGame(e.host)}>
+        {e.game} hosted by {e.host}
+      </button>
+    )
+  }
+
   createGame = () => {
-    console.log('creating game...')
-    console.log(this.state.gamename);
     createGame(this.state.category, this.state.count)
       .then(game => {
-        emitCreateGame({name: this.state.gamename, content: game});
+        emitCreateGame({ name: this.state.gamename, content: game });
         this.setState({ game: game });
       })
   }
@@ -96,6 +148,12 @@ class JoinCreate extends Component {
   render() {
     return (
       <div className="join-create">
+        <h2>Find A Game To Join</h2>
+        <button onClick={emitFindGame}>
+          Click to find available games
+        </button>
+        <h4>{this.state.findGameHeading}</h4>
+        <ul>{this.state.gamelist.map(this.gamelistmapper)}</ul>
         <h2>Create A New Game</h2>
         <label>
           Name your game:
@@ -124,6 +182,9 @@ class JoinCreate extends Component {
           onChange={this.handleChange} />
         <button onClick={this.createGame}>
           Create Game
+        </button>
+        <button onClick={() => console.log(this.state)}>
+          Console Log Join Create State
         </button>
         {this.state.game.length > 0 ? (
           <div className="game">

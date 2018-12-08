@@ -54,9 +54,7 @@ module.exports = {
   },
   checkSubmission: (req, res, next) => {
     const db = req.app.get('db');
-    console.log('tryna check submission...');
-    console.log(req.body.id);
-    console.log(req.body.choice);
+    console.log(`submitted: ID: ${req.body.id} Choice: ${req.body.choice}`);
     db.check_wiki_submission([req.body.id, req.body.choice])
       .then(r => {
         let a = !!r.length;
@@ -110,25 +108,23 @@ module.exports = {
       .catch(err('get wiki mc failed', res))
   },
   questionAnswered: (req, res, next) => {
-    console.log('question answered...');
     if (req.session.game.some(e => e.id == req.params.id)) {
-      console.log('found id...');
-      console.log(req.session.game.length);
       req.session.game = req.session.game.filter(e => {
         return e.id !== req.params.id;
       })
-      console.log(req.session.game.length);
-      req.session.gamescore += 1;
+      console.log(`question answered ${req.session.game.length}`);
+      if (req.session.gamescore) {
+        req.session.gamescore += 1;
+      } else {
+        req.session.gamescore = 1;
+      }
       res.status(200).send({ score: req.session.gamescore });
     } else {
-      console.log('found no id...');
       res.status(500).send('invalid id');
     }
   },
   createGame: (req, res, next) => {
-    console.log('creating game...');
-    console.log(req.params.category);
-    console.log(req.params.count);
+    console.log(`game. cat: ${req.params.category} num: ${req.params.count}`);
     const db = req.app.get('db');
     const rts = [];
     db.get_some_wiki_questions_by_category([
@@ -168,9 +164,8 @@ module.exports = {
           e.answers = fyshuffle(e.answers);
         })
         req.session.game = rts;
-        console.log('saved game to session:');
         req.session.gamescore = 0;
-        console.log(rts);
+        console.log(`saved game to session: ${rts}`);
         res.status(200).send(rts);
       })
       .catch(err('create game failed', res));

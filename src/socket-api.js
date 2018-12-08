@@ -2,8 +2,16 @@ import io from 'socket.io-client';
 
 const socket = io();
 
+export function refreshConnection(){
+  io.connect({'forceNew': true})
+}
+
 export function onLogIn(cb){
   socket.on('log in', nickname => cb(nickname));
+}
+
+export function onWhoAreYou(cb){
+  socket.on('who are you', () => cb());
 }
 
 export function onJoinRoom(cb){
@@ -23,17 +31,27 @@ export function onUserDisconnected(cb){
 }
 
 export function onSocketQuery(cb){
-  socket.on('socket query',response => cb(response));
+  socket.on('socket query',response => cb(JSON.parse(response)));
+}
+
+export function onGamesFound(cb){
+  socket.on('games found', gamelist => cb(JSON.parse(gamelist)));
+}
+
+export function onGameInfo(cb){
+  socket.on('game info', game => cb(JSON.parse(game)));
 }
 
 export function emitLogIn(username){
-  console.log('logging in on socket...');
-  console.log(username);
   socket.emit('log in',username);
 }
 
-export function emitJoinGame(game){
-  socket.emit('join game', game);
+export function emitWhoAmI(username){
+  socket.emit('who i am',username);
+}
+
+export function emitJoinGame(user){
+  socket.emit('join game', user);
 }
 
 export function emitCreateGame(game){
@@ -50,4 +68,8 @@ export function emitAnswerQuestion(qid){
 
 export function emitSocketQuery(){
   socket.emit('socket query');
+}
+
+export function emitFindGame(){
+  socket.emit('find game');
 }

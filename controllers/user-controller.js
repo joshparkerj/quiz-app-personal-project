@@ -2,9 +2,7 @@ const bc = require('./bcrypt-controller');
 
 module.exports = {
   authenticateUser: (req,res,next) => {
-    console.log('tryna authenticate user...');
-    console.log(req.body.username);
-    console.log(req.body.password);
+    console.log(`Authenticating user: ${req.body.username}`);
     const db = req.app.get('db');
     db.get_hash([
       req.body.username
@@ -94,12 +92,10 @@ module.exports = {
         console.log(err);})
   },
   getApiAuthMe: (req,res,next) => {
-    console.log('tryna get api auth me...');
-    console.log(req.session.userid);
     const db = req.app.get('db');
     db.get_user([req.session.userid])
       .then(r => {
-        console.log(r);
+        console.log(`Getting api auth me: ${r}`);
         res.status(200).send(r);
       })
       .catch(err => {

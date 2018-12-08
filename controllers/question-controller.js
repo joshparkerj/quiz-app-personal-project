@@ -65,13 +65,10 @@ module.exports = {
   },
   checkQuizResponse: (req,res,next) => {
     const db = req.app.get('db');
-    console.log('tryna check quiz response');
-    console.log(req.body.q_id);
-    console.log(req.body.answer);
+    console.log(`Checking quiz response: ${req.body.answer}`);
     db.check_quiz_response([req.body.q_id,req.body.answer])
       .then(r => {
         let a = !!r.length;
-        console.log(req.session.userid);
         db.log_ask([
           req.body.q_id,
           req.session.userid,

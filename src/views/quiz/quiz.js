@@ -61,8 +61,7 @@ class Quiz extends Component {
   gqq = id => {
     getQuizQuestion(id)
       .then(r => {
-        console.log('GOT SOMETHING!');
-        console.log(r);
+        console.log(`Got quiz question: ${r}`);
         this.setState({
           displayQuestion: (
             <ResponseForm id={id} text={r[0].text} done={this.resetQuestionID}/>

@@ -49,7 +49,6 @@ const getCategory = term => {
             let output = res.map((e, i) => {
                 let a = catList[i].replace(/_/g, ' ');
                 let are = new RegExp(a.replace(/ /g, '.{0,8}'), 'gi');
-                console.log(are);
                 return {
                     text: e.text.replace(are, '********').replace(/\[..?\]/g, ''),
                     img_url: `https://${e.img_url}`,

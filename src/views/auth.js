@@ -24,9 +24,6 @@ class Auth extends Component{
   }
 
   login = () => {
-    console.log('tryna log in...');
-    console.log(this.state.usernameInput);
-    console.log(this.state.passwordInput);
     authenticateUser(this.state.usernameInput,this.state.passwordInput)
       .then(r => {
         if(r[0]){

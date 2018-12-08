@@ -4,34 +4,36 @@ import Questions from '../questions';
 import Delete from './delete';
 import NewQuestion from './newquestion';
 import {
-    getQuestions,
-    deleteQuestion,
-    addQuestion,
-    scrapeWiki
-  } from '../../api';
+  getQuestions,
+  deleteQuestion,
+  addQuestion,
+  scrapeWiki
+} from '../../api';
 
 class Admin extends Component {
 
-  constructor(){
+  constructor() {
     super();
     this.state = {
       questions: [],
       deletePage: false,
       submissionForm: false,
+      disablescrape: false,
+      scrapebuttontext: 'Scrape Wiki',
       newText: '',
       newAnswer: '',
       name: ''
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     getQuestions()
       .then(r => {
-        this.setState({questions: r});
+        this.setState({ questions: r });
       })
   }
 
-  questionMapper = (e,i) => {
+  questionMapper = (e, i) => {
     return (
       <div className="question-wrapper" key={i}>
         <Question data={e} handleDelete={this.loadDeletePage} />
@@ -40,7 +42,7 @@ class Admin extends Component {
   }
 
   loadDeletePage = id => {
-    this.setState({deletePage: id})
+    this.setState({ deletePage: id })
   }
 
   confirmDelete = () => {
@@ -57,12 +59,12 @@ class Admin extends Component {
   }
 
   cancelDelete = () => {
-    this.setState({deletePage: false});
+    this.setState({ deletePage: false });
   }
 
   displayDeletePage = () => {
-    if (this.state.deletePage){
-      return(
+    if (this.state.deletePage) {
+      return (
         <Delete
           id={this.state.deletePage}
           data={this.state.questions.filter(e => {
@@ -72,14 +74,14 @@ class Admin extends Component {
           handleChicken={this.cancelDelete} />
       )
     } else {
-      return(
+      return (
         <div className="nothing-to-see-here"></div>
       )
     }
   }
 
   handleChange = e => {
-    this.setState({[e.target.name]: e.target.value});
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   handleSubmit = () => {
@@ -98,8 +100,8 @@ class Admin extends Component {
   }
 
   displaySubmissionForm = () => {
-    if (this.state.submissionForm){
-      return(
+    if (this.state.submissionForm) {
+      return (
         <NewQuestion
           text={this.state.newText}
           answer={this.state.newAnswer}
@@ -115,14 +117,20 @@ class Admin extends Component {
   }
 
   showForm = () => {
-    this.setState({submissionForm: true});
+    this.setState({ submissionForm: true });
   }
 
   scrape = () => {
+    this.setState({
+      term: '',
+      disablescrape: true,
+      scrapebuttontext: "Please wait..."
+    })
     scrapeWiki(this.state.term)
       .then(r => {
         this.setState({
-          term: ''
+          disablescrape: false,
+          scrapebuttontext: "Scrape Wiki"
         })
       })
   }
@@ -137,13 +145,18 @@ class Admin extends Component {
           name="term"
           value={this.state.term}
         />
-        <button onClick={this.scrape}>Scrape Wiki</button>
+        <button
+          onClick={this.scrape}
+          disabled={this.state.disablescrape}
+        >{this.state.scrapebuttontext}</button>
+        <p>Note: The scrape wiki operation takes a while;
+          sometimes over a minute.</p>
         <Questions
           mapper={this.questionMapper}
           questions={this.state.questions}
-         />
-         {this.displayDeletePage()}
-         {this.displaySubmissionForm()}
+        />
+        {this.displayDeletePage()}
+        {this.displaySubmissionForm()}
       </div>
     )
   }

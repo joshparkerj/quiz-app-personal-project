@@ -15,8 +15,12 @@ module.exports = {
     });
   },
   logout: (req,res,next) => {
-    console.log('logging out now...');
+    console.log(`${req.session.username} logging out now...`);
     req.session.destroy();
     res.status(204).send();
+  },
+  setGameOnSession: (req,res,next) => {
+    req.session.game = req.body.game;
+    res.status(200).send('game set');
   }
 }

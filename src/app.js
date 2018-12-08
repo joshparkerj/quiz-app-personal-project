@@ -3,7 +3,12 @@ import './app.css';
 import Auth from './views/auth';
 import Splash from './views/splash';
 import { getApiAuthMe, getSession } from './api';
-import { emitSocketQuery } from './socket-api';
+import {
+  emitSocketQuery,
+  onSocketQuery,
+  onWhoAreYou,
+  emitWhoAmI
+} from './socket-api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
@@ -30,9 +35,13 @@ class App extends Component {
 
   componentDidMount() {
     this.checkAuth();
-    this.props.osq(response => {
+    onSocketQuery(response => {
       console.log(response);
-      toast.success(`socket nickname is: ${response}`);
+      toast.success(`socket nickname is: ${response[0]}`);
+    })
+    onWhoAreYou(() => {
+      console.log('socket id-ing');
+      emitWhoAmI(this.state.username);
     })
   }
 
@@ -90,19 +99,20 @@ class App extends Component {
   }
 
   handleClick = selection => {
+    console.log(`button clicked: ${selection}`);
     this.setState({ navSelection: selection });
   }
 
   renderNavSelection = () => {
     if (this.state.navSelection === 'join-create') {
-      return <JoinCreate />
+      return <JoinCreate username={this.state.username} />
     } else if (this.state.navSelection === 'quiz') {
       return <Quiz />
     } else if (this.state.navSelection === 'multi-wiki') {
       return <MultiWiki />
     } else if (this.state.navSelection === 'mc') {
       return <MultipleChoice />
-    } else if (this.state.navSelection === 'admin-pages') {
+    } else if (this.state.navSelection === 'admin') {
       return <Admin />
     } else {
       return <Splash />
@@ -120,6 +130,9 @@ class App extends Component {
         </button>
         <button onClick={this.handleSocket}>
           See socket info.
+        </button>
+        <button onClick={() => console.log(this.state)}>
+          Console Log App State
         </button>
         <Nav
           loggedIn={this.state.loggedin}

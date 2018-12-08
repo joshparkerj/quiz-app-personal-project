@@ -13,17 +13,15 @@ const dotenv = require('dotenv').config();
 const cors = require('cors');
 const session = require('express-session');
 const app = express();
-const http = require('http').Server(app);
+const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const sesh = session({
   secret: process.env.SEC,
-  resave: false,
-  saveUninitialized: true,
-  cookie: {secure: false, maxAge: 1000 * 60 * 60}
+  resave: true,
+  saveUninitialized: true
 });
 
 app.use(bodyParser.json());
-app.use(cors({origin: ['http://localhost:3000']}));
 
 massive(process.env.DBURI)
   .then(db => {
@@ -32,10 +30,6 @@ massive(process.env.DBURI)
     console.log(err);})
 
 app.use(sesh);
-
-io.use((socket,next) => {
-  sesh(socket.request, socket.request.res, next);
-})
 
 app.use(express.static('./build'));
 
@@ -82,6 +76,8 @@ app.delete('/user/:id', uc.deleteUser);
 app.post('/user-login',uc.authenticateUser);
 
 app.get('/api/auth/me',uc.getApiAuthMe);
+
+app.post('/setgameonsession',nc.setGameOnSession);
 
 app.get('/session',nc.getSession);
 

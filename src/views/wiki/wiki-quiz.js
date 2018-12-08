@@ -25,11 +25,8 @@ class WikiQuiz extends Component {
   }
 
   componentDidMount() {
-    console.log('Wiki Quiz Component Did Mount');
     getWikiMC()
       .then(mc => {
-        console.log('Got Wiki MC');
-        console.log(mc);
         if (mc && mc.text) {
           this.setState({
             wikiText: mc.text,
@@ -41,8 +38,6 @@ class WikiQuiz extends Component {
         }
         getWikiCategories()
           .then(cats => {
-            console.log('got cats');
-            console.log(cats);
             this.setState({
               category: cats[0].category,
               categories: cats
