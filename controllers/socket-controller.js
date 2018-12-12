@@ -6,7 +6,6 @@ module.exports = {
     socket.emit('who are you');
     socket.on('log in', username => {
       socket.nickname = username;
-      socket.broadcast.emit('log in', socket.nickname);
       console.log(`${socket.nickname} logged in`);
       connectedUsers[socket.nickname] = socket;
     })
@@ -27,7 +26,6 @@ module.exports = {
       console.log(`${socket.nickname} created ${game.name}`);
     })
     socket.on('find game', () => {
-      socket.broadcast.emit('report game', socket.nickname);
       gamelist = [];
       for (user in connectedUsers) {
         if (connectedUsers[user].game) {
@@ -43,17 +41,6 @@ module.exports = {
         JSON.stringify(gamelist)
       );
     })
-    socket.on('report game', nick => {
-      if (socket.game) {
-        socket.to(connectedUsers[nick]).emit('game', {
-          name: socket.game.name,
-          user: socket.nickname
-        })
-      }
-    })
-    socket.on('game', gameinfo => {
-      socket.emit('game found', gameinfo);
-    })
     socket.on('join game', user => {
       if (!connectedUsers[user]) {
         socket.emit('unable to join');
@@ -68,27 +55,12 @@ module.exports = {
         'join game',
         JSON.stringify({ r: game, n: socket.nickname }));
     })
-    socket.on('chat message', msg => {
-      socket.to(socket.game.name).emit(
-        'chat message',
-        JSON.stringify({ n: socket.nickname, m: msg }));
-      console.log(`${socket.nickname}: ${msg}`)
-    })
     socket.on('answer question', qid => {
       socket.gamescore += 1;
       socket.to(socket.game.name).emit(
         'answer question',
         JSON.stringify({ n: socket.nickname, q: qid, s: socket.gamescore }));
       console.log(`${socket.nickname} answered q#: ${qid}`);
-    })
-    socket.on('socket query', () => {
-      socket.emit('socket query', JSON.stringify([
-        socket.nickname]));
-      console.log(`${socket.nickname} queried their socket`);
-    })
-    socket.on('disconnect', () => {
-      socket.emit('user disconnected', socket.nickname);
-      console.log(`${socket.nickname} disconnected`);
     })
   }
 }

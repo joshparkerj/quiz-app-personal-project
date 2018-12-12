@@ -38,17 +38,6 @@ module.exports = {
         console.log(err);
       })
   },
-  getUsers: (req,res,next) => {
-    const db = req.app.get('db');
-    db.get_users()
-      .then(r => {
-        res.status(200).send(r);
-      })
-      .catch(err => {
-        res.status(500).send('get users failed');
-        console.log(err);
-      })
-  },
   postUser: (req,res,next) => {
     const db = req.app.get('db');
     bc.saltAndHash(String(req.body.password))
@@ -63,33 +52,6 @@ module.exports = {
             res.status(500).send('post user failed');
             console.error(err);})
       })
-  },
-  getUser: (req,res,next) => {
-    const db = req.app.get('db');
-    db.get_user([req.params.id])
-      .then(r => {
-        let f = r.length;
-        res.status(f ? 200 : 404).send(f ? r : 'nothing found')})
-      .catch(err => {
-        res.status(500).send('get user failed');
-        console.log(err);})
-  },
-  deleteUser: (req,res,next) => {
-    const db = req.app.get('db');
-    db.get_user([req.params.id])
-      .then(r => {
-        if (!r.length){
-          res.status(404).send('no user to delete');
-        }else{
-          db.delete_user([req.params.id])
-            .then(r => {
-              res.status(200).send('user deleted');})
-            .catch(err => {
-              res.status(500).send('delete user failed');
-              console.log(err);})}})
-      .catch(err => {
-        res.status(500).send('get user failed, no delete attempted');
-        console.log(err);})
   },
   getApiAuthMe: (req,res,next) => {
     const db = req.app.get('db');

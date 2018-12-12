@@ -18,7 +18,7 @@ import {
   refreshConnection
 } from '../socket-api';
 import { toast } from 'react-toastify';
-import WikiMC from './wiki/wiki-mc';
+import WikiMC from './wiki-mc';
 
 class JoinCreate extends Component {
 
