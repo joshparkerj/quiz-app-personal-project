@@ -37,6 +37,9 @@ class Auth extends Component{
           toast.warn('try again');
         }
       })
+      .catch(err => {
+        toast.warn('try again');
+      })
   }
 
   register = () => {

@@ -12,5 +12,9 @@ module.exports = {
   setGameOnSession: (req,res,next) => {
     req.session.game = req.body.game;
     res.status(200).send('game set');
+  },
+  resetScore: (req,res,next) => {
+    req.session.gamescore = 0;
+    res.status(200).send('score reset');
   }
 }

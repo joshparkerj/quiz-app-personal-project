@@ -109,5 +109,26 @@ module.exports = {
         res.status(200).send(rts);
       })
       .catch(err('create game failed', res));
+  },
+  getEntireCategory: (req, res, next) => {
+    const db = req.app.get('db');
+    db.get_all_questions_in_category([req.params.category])
+      .then(r(200, res))
+      .catch(err('get entire category failed', res));
+  },
+  deleteWikiQuestion: (req,res,next) => {
+    const db = req.app.get('db');
+    db.remove_refs_to_question([req.params.id])
+      .then(r => {
+        return db.delete_wiki_question([req.params.id])
+      })
+      .then(r(200,res))
+      .catch(err('delete wiki question failed', res));
+  },
+  updateWikiQuestion: (req,res,next) => {
+    const db = req.app.get('db');
+    db.update_wiki_question([req.params.id,req.body.text])
+      .then(r(200,res))
+      .catch(err('update wiki question failed', res));
   }
 }

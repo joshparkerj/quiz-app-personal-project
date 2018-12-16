@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 import JoinCreate from './views/join-create';
+import ShowStats from './views/show-stats';
 import Admin from './views/admin';
 
 class App extends Component {
@@ -19,6 +20,7 @@ class App extends Component {
     this.state = {
       username: '',
       profile_pic: '',
+      content: 'games',
       loggedin: false,
       admin: false,
     }
@@ -67,8 +69,26 @@ class App extends Component {
     }
   }
 
-  showGame = () => {
-    return <JoinCreate username={this.state.username} />
+  showContent = () => {
+    return (
+      <div className="content">
+        <div onChange={this.handleRadio}>
+          <input type="radio" name="content" value="games" /> Play Game
+          <input type="radio" name="content" value="stats" /> See Stats
+        </div>
+        {
+          this.state.content === 'games' ?
+            <JoinCreate username={this.state.username} /> :
+            this.state.content === 'stats' ?
+              <ShowStats /> :
+              "I don't know what to show..."
+        }
+      </div>
+    )
+  }
+
+  handleRadio = e => {
+    this.setState({ content: e.target.value });
   }
 
   showAdmin = () => {
@@ -81,7 +101,7 @@ class App extends Component {
         <ToastContainer />
         <Auth checkAuth={this.checkAuth} loggedin={this.state.loggedin} />
         {this.displayLoginStatus()}
-        {this.state.loggedin ? this.showGame() : ''}
+        {this.state.loggedin ? this.showContent() : ''}
         {this.state.admin ? this.showAdmin() : ''}
       </div>
     )

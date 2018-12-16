@@ -4,7 +4,8 @@ import {
   getWikiCategories,
   wikiSelection,
   questionAnswered,
-  setGameOnSession
+  setGameOnSession,
+  resetScore
 } from '../api';
 import {
   emitCreateGame,
@@ -57,6 +58,7 @@ class JoinCreate extends Component {
           `${msg.n} has answered a question!\nTheir score is now ${msg.s}!`);
         if (this.state.game.length === 1) {
           toast.error('The game is over!');
+          resetScore();
         }
         setGameOnSession(this.state.game.filter(e => {
           return e.id !== msg.q;
@@ -98,6 +100,7 @@ class JoinCreate extends Component {
                 emitAnswerQuestion(wikiID);
                 if (game.length === 0) {
                   toast.success('you\'ve finished the game!');
+                  resetScore();
                 }
                 this.setState({
                   game: game
