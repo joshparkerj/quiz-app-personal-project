@@ -42,23 +42,23 @@ class ShowStats extends Component {
   statMapper = (e, i) => {
     return (
       <tr className="statcat" key={i}>
-        {columnKeys.map((f,i)=>{
+        {columnKeys.map((f, i) => {
           return <td key={i}>{e[f]}</td>
         })}
       </tr>
     )
   }
 
-  colSort = column => {
+  colSort = (column, alpha = false) => {
     if (this.state.sorting[column] === '⇵') {
       this.setState({
         sorting: this.state.sorting.map((e, i) => i === column ? '↓' : '⇵'),
-        stats: this.state.stats.sort(this.makeSorters(column, 'd'))
+        stats: this.state.stats.sort(this.makeSorters(column, 'd', alpha))
       })
     } else if (this.state.sorting[column] === '↓') {
       this.setState({
         sorting: this.state.sorting.map((e, i) => i === column ? '↑' : '⇵'),
-        stats: this.state.stats.sort(this.makeSorters(column, 'a'))
+        stats: this.state.stats.sort(this.makeSorters(column, 'a', alpha))
       })
     } else {
       this.setState({
@@ -68,7 +68,15 @@ class ShowStats extends Component {
     }
   }
 
-  makeSorters = (c, d) => {
+  makeSorters = (c, d, alpha) => {
+    if (alpha) {
+      return (a, b) => {
+        const au = a[columnKeys[c]].toUpperCase();
+        const bu = b[columnKeys[c]].toUpperCase();
+        let decision = au < bu ? -1 : bu < au ? 1 : 0;
+        return d === 'd' ? -decision : decision;
+      }
+    }
     return (a, b) => {
       return d === 'd' ? b[columnKeys[c]] - a[columnKeys[c]] :
         a[columnKeys[c]] - b[columnKeys[c]];
@@ -79,7 +87,7 @@ class ShowStats extends Component {
     return (
       <table className="show-stats">
         <tr>
-          <th>Category<button onClick={() => this.colSort(0)}>
+          <th>Category<button onClick={() => this.colSort(0, true)}>
             {this.state.sorting[0]}</button></th>
           <th>Your Attempts<button onClick={() => this.colSort(1)}>
             {this.state.sorting[1]}</button></th>
