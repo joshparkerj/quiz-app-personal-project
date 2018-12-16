@@ -5,16 +5,22 @@ import {
   wikiSelection,
   questionAnswered,
   setGameOnSession,
+  leaveGameSession,
   resetScore
 } from '../api';
 import {
   emitCreateGame,
   emitFindGame,
   emitJoinGame,
+  emitLeaveGame,
   emitAnswerQuestion,
+  emitCheckName,
   onGamesFound,
   onJoinRoom,
+  onLeaveGame,
   onGameInfo,
+  onGameNameUnavailable,
+  onGameNameOK,
   onAnswerQuestion,
   refreshConnection
 } from '../socket-api';
@@ -32,7 +38,8 @@ class JoinCreate extends Component {
       game: [],
       gamelist: [],
       gamename: '',
-      findGameHeading: ''
+      findGameHeading: '',
+      showForms: true
     }
   }
 
@@ -45,8 +52,17 @@ class JoinCreate extends Component {
         this.setState({ findGameHeading: 'No games found...' });
       }
     })
+    onGameNameUnavailable(() => {
+      toast.error('that name is in use! pick another')
+    })
+    onGameNameOK(() => {
+      this.generateGame();
+    })
     onJoinRoom(msg => {
       toast.success(`${msg.n} has joined your game!`)
+    })
+    onLeaveGame(name => {
+      toast.warn(`${name} has left the game!`)
     })
     onGameInfo(game => {
       this.setState({ game: game.content });
@@ -59,6 +75,7 @@ class JoinCreate extends Component {
         if (this.state.game.length === 1) {
           toast.error('The game is over!');
           resetScore();
+          this.setState({ showForms: true });
         }
         setGameOnSession(this.state.game.filter(e => {
           return e.id !== msg.q;
@@ -77,6 +94,10 @@ class JoinCreate extends Component {
           categories: cats
         })
       })
+  }
+
+  componentWillUnmount(){
+    this.leaveGame();
   }
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value })
@@ -101,6 +122,7 @@ class JoinCreate extends Component {
                 if (game.length === 0) {
                   toast.success('you\'ve finished the game!');
                   resetScore();
+                  this.setState({ showForms: true });
                 }
                 this.setState({
                   game: game
@@ -128,67 +150,78 @@ class JoinCreate extends Component {
     )
   }
 
-  joinGame = host => {
-    emitJoinGame(host);
+  joinGame = game => {
+    this.setState({
+      findGameHeading: '',
+      gamelist: [],
+      showForms: false
+    });
+    emitJoinGame(game);
   }
 
   gamelistmapper = (e, i) => {
     return (
-      <button key={i} onClick={() => this.joinGame(e.host)}>
-        {e.game} hosted by {e.host}
+      <button key={i} onClick={() => this.joinGame(e.game)}>
+        {e.game} created by {e.host}
       </button>
     )
   }
 
   createGame = () => {
+    emitCheckName(this.state.gamename);
+  }
+
+  generateGame = () => {
     createGame(this.state.category, this.state.count)
       .then(game => {
         emitCreateGame({ name: this.state.gamename, content: game });
-        this.setState({ game: game });
+        this.setState({
+          findGameHeading: '',
+          gamelist: [],
+          showForms: false,
+          game: game
+        });
+      })
+  }
+
+  leaveGame = () => {
+    emitLeaveGame();
+    leaveGameSession()
+      .then(r => {
+        this.setState({ showForms: true, game: [] });
       })
   }
 
   render() {
     return (
       <div className="join-create">
-        <h2>Find A Game To Join</h2>
-        <button onClick={emitFindGame}>
-          Click to find available games
-        </button>
-        <h4>{this.state.findGameHeading}</h4>
-        <ul>{this.state.gamelist.map(this.gamelistmapper)}</ul>
-        <h2>Create A New Game</h2>
-        <label>
-          Name your game:
-        </label>
-        <input
-          name="gamename"
-          value={this.state.gamename}
-          onChange={this.handleChange} />
-        <label>
-          Select a category:
-        </label>
-        <select
-          name="category"
-          onChange={this.handleChange}
-          value={this.state.category}
-        >
-          {this.state.categories.map(this.categoryMapper)}
-        </select>
-        <label>
-          How many questions?
-        </label>
-        <input
-          type="number"
-          name="count"
-          value={this.state.count}
-          onChange={this.handleChange} />
-        <button onClick={this.createGame}>
-          Create Game
-        </button>
-        <button onClick={() => console.log(this.state)}>
-          Console Log Join Create State
-        </button>
+        {this.state.showForms ? (
+          <div className="join-create-forms">
+            <h2>Find A Game To Join</h2>
+            <button onClick={emitFindGame}>Find available games</button>
+            <h4>{this.state.findGameHeading}</h4>
+            <ul>{this.state.gamelist.map(this.gamelistmapper)}</ul>
+            <h2>Create A New Game</h2>
+            <label>Name your game:</label>
+            <input
+              name="gamename"
+              value={this.state.gamename}
+              onChange={this.handleChange} />
+            <label>Select a category:</label>
+            <select
+              name="category"
+              onChange={this.handleChange}
+              value={this.state.category}>
+              {this.state.categories.map(this.categoryMapper)}</select>
+            <label>How many questions?</label>
+            <input
+              type="number"
+              name="count"
+              value={this.state.count}
+              onChange={this.handleChange} />
+            <button onClick={this.createGame}>Create Game</button>
+          </div>
+        ) : <button onClick={this.leaveGame}>Leave This Game</button>}
         {this.state.game.length > 0 ? (
           <div className="game">
             {this.state.game.map(this.gameMapper)}

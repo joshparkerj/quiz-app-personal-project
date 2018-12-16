@@ -56,7 +56,13 @@ app.get('/api/userstats/me',statc.userStats);
 
 app.get('/api/allstats',statc.globalStats);
 
+app.get('/api/userprogress/me',statc.userProgress);
+
+app.get('/api/progressleaderboard',statc.progressLeaderboard);
+
 app.post('/setgameonsession',nc.setGameOnSession);
+
+app.post('/leavegamesession',nc.leaveGameSession);
 
 app.post('/resetscore', nc.resetScore);
 

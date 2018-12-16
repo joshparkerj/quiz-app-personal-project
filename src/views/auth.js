@@ -9,9 +9,9 @@ import {
 } from '../socket-api';
 import { toast } from 'react-toastify';
 
-class Auth extends Component{
+class Auth extends Component {
 
-  constructor(){
+  constructor() {
     super();
     this.state = {
       usernameInput: '',
@@ -20,13 +20,13 @@ class Auth extends Component{
   }
 
   handleChange = e => {
-    this.setState({[e.target.name]: e.target.value});
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   login = () => {
-    authenticateUser(this.state.usernameInput,this.state.passwordInput)
+    authenticateUser(this.state.usernameInput, this.state.passwordInput)
       .then(r => {
-        if(r[0]){
+        if (r[0]) {
           this.props.checkAuth();
           emitLogIn(this.state.usernameInput);
           this.setState({
@@ -43,10 +43,14 @@ class Auth extends Component{
   }
 
   register = () => {
-    postUser(this.state.usernameInput,this.state.passwordInput)
+    postUser(this.state.usernameInput, this.state.passwordInput)
       .then(r => {
         console.log(r);
-        toast.success('now try logging in');
+        if (r === 'success! you may now login') {
+          toast.success('now try logging in');
+        } else {
+          toast.error('username not available')
+        }
       })
   }
 
@@ -60,8 +64,8 @@ class Auth extends Component{
       })
   }
 
-  render(){
-    if(!this.props.loggedin){
+  render() {
+    if (!this.props.loggedin) {
       return (
         <div className="auth">
           <div className="auth-inputs">
@@ -72,6 +76,7 @@ class Auth extends Component{
               onChange={this.handleChange} />
             <label>Password:</label>
             <input
+              type="password"
               name="passwordInput"
               value={this.state.passwordInput}
               onChange={this.handleChange} />

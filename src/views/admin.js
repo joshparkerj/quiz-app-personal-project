@@ -100,8 +100,14 @@ class Admin extends Component {
         <button onClick={() => {
           deleteWikiQuestion(this.state.toDelete)
             .then(r => {
+              return getEntireCategory(this.state.category)
+            })
+            .then(r=> {
               toast.success('deleted!');
-              this.setState({ showDelete: false });
+              this.setState({
+                showDelete: false,
+                questions: r
+              })
             })
         }}>
           Yes!
@@ -125,8 +131,14 @@ class Admin extends Component {
         <button onClick={() => {
           updateWikiQuestion(this.state.toUpdate, this.state.updatetext)
             .then(r => {
+              return getEntireCategory(this.state.category)
+            })
+            .then(r => {
               toast.success('updated!');
-              this.setState({ showUpdate: false })
+              this.setState({
+                showUpdate: false,
+                questions: r
+              })
             })
         }}>
           Confirm!

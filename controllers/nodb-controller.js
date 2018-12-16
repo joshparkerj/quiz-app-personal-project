@@ -13,6 +13,11 @@ module.exports = {
     req.session.game = req.body.game;
     res.status(200).send('game set');
   },
+  leaveGameSession: (req,res,next) => {
+    delete req.session.game;
+    req.session.gamescore = 0;
+    res.status(200).send('game deleted');
+  },
   resetScore: (req,res,next) => {
     req.session.gamescore = 0;
     res.status(200).send('score reset');

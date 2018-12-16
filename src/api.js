@@ -4,9 +4,6 @@ const api_address = "/";
 
 const err = err => console.error(err);
 const r = r => {
-  // extremely useful in dev environment; get rid of it when deploying:
-  console.log(r.data);
-
   return r.data;
 };
 
@@ -81,6 +78,12 @@ export function setGameOnSession(game) {
     .catch(err)
 }
 
+export function leaveGameSession() {
+  return axios.post(`${api_address}leavegamesession`)
+    .then(r)
+    .catch(err)
+}
+
 export function getMyStats() {
   return axios.get(`${api_address}api/userstats/me`)
     .then(r)
@@ -89,6 +92,18 @@ export function getMyStats() {
 
 export function getAllStats() {
   return axios.get(`${api_address}api/allstats`)
+    .then(r)
+    .catch(err)
+}
+
+export function getMyProgress() {
+  return axios.get(`${api_address}api/userprogress/me`)
+    .then(r)
+    .catch(err)
+}
+
+export function getProgressLeaderboard() {
+  return axios.get(`${api_address}api/progressleaderboard`)
     .then(r)
     .catch(err)
 }

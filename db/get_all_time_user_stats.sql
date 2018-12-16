@@ -1,5 +1,4 @@
 SELECT
-  username,
   category,
   COUNT(*) AS attempts,
   SUM(CASE WHEN answered THEN 1 ELSE 0 END) AS right,

@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 
 import JoinCreate from './views/join-create';
 import ShowStats from './views/show-stats';
+import Leaderboard from './views/leaderboard';
 import Admin from './views/admin';
 
 class App extends Component {
@@ -75,13 +76,16 @@ class App extends Component {
         <div onChange={this.handleRadio}>
           <input type="radio" name="content" value="games" /> Play Game
           <input type="radio" name="content" value="stats" /> See Stats
+          <input type="radio" name="content" value="board" /> Leaderboard
         </div>
         {
           this.state.content === 'games' ?
             <JoinCreate username={this.state.username} /> :
             this.state.content === 'stats' ?
               <ShowStats /> :
-              "I don't know what to show..."
+              this.state.content === 'board' ?
+                <Leaderboard /> :
+                "I don't know what to show..."
         }
       </div>
     )
