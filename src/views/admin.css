@@ -1,4 +1,42 @@
-textarea {
-  width: 50%;
-  height: 200px;
+.admin {
+  margin-top: 75px;
+  border-top: 8px solid;
+  padding-top: 35px;
+}
+
+.admin-update,.admin-delete {
+  margin: 10px;
+  padding: 10px;
+  position: fixed;
+  width: 40vw;
+  left: 10px;
+  top: 10px;
+  border: solid;
+  background: linear-gradient(rgba(180,180,180,0.9),rgba(255,255,255,0.9));
+}
+
+.admin-update {
+  height: 40vh;
+}
+
+.admin-delete {
+  height: 20vh;
+}
+
+.admin textarea {
+  width: 35vw;
+  height: 25vh;
+}
+
+.admin h4 {
+  display: inline-block;
+  padding: 5px;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.admin button {
+  margin: 10px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }

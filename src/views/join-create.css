@@ -1,0 +1,21 @@
+.join-create-forms {
+  grid-template-columns: 1fr 1fr;
+  display: grid;
+}
+
+.join-create-forms input,.join-create-forms label {
+  grid-column: span 1;
+  margin: 10px;
+}
+
+.join-create-forms button {
+  grid-column: span 2;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: 0 8px 4px rgba(0,0,0,0.3);
+}
+
+.join-create-forms h2 {
+  grid-column: span 2;
+}

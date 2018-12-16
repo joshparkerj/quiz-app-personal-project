@@ -21,9 +21,11 @@ class Admin extends Component {
       questions: [],
       showUpdate: false,
       toUpdate: null,
+      updateAnswer: '',
       updatetext: '',
       showDelete: false,
-      toDelete: null
+      toDelete: null,
+      deleteAnswer: ''
     }
   }
 
@@ -63,18 +65,22 @@ class Admin extends Component {
       })
   }
 
-  deleteQuestion = id => {
+  deleteQuestion = (id,answer) => {
     this.setState({
       toDelete: id,
-      showDelete: true
+      showDelete: true,
+      showUpdate: false,
+      deleteAnswer: answer
     })
   }
 
-  updateQuestion = (id, text) => {
+  updateQuestion = (id, text, answer) => {
     this.setState({
       toUpdate: id,
       updatetext: text,
-      showUpdate: true
+      showUpdate: true,
+      showDelete: false,
+      updateAnswer: answer
     })
   }
 
@@ -83,10 +89,10 @@ class Admin extends Component {
       <div className={`question${e.id}`} key={i}>
         <h4>{e.answer}</h4>
         <p>{e.text}</p>
-        <button onClick={() => this.deleteQuestion(e.id)}>
+        <button onClick={() => this.deleteQuestion(e.id, e.answer)}>
           Delete This Question
         </button>
-        <button onClick={() => this.updateQuestion(e.id, e.text)}>
+        <button onClick={() => this.updateQuestion(e.id, e.text, e.answer)}>
           Update This Question
         </button>
       </div>
@@ -96,6 +102,7 @@ class Admin extends Component {
   showDelete = () => {
     return (
       <div className="admin-delete">
+        <h4>{this.state.deleteAnswer}</h4>
         <h4>Are you sure you wish to delete?</h4>
         <button onClick={() => {
           deleteWikiQuestion(this.state.toDelete)
@@ -122,6 +129,7 @@ class Admin extends Component {
   showUpdate = () => {
     return (
       <div className="admin-update">
+        <h4>{this.state.updateAnswer}</h4>
         <h4>Tweak text:</h4>
         <textarea
           name="updatetext"

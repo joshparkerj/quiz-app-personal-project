@@ -26,6 +26,7 @@ import {
 } from '../socket-api';
 import { toast } from 'react-toastify';
 import WikiMC from './wiki-mc';
+import './join-create.css';
 
 class JoinCreate extends Component {
 
