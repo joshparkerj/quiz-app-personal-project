@@ -8,7 +8,7 @@
   margin: 1vw;
   padding: 1vw;
   position: fixed;
-  width: 4vw;
+  width: 40vw;
   left: 1vw;
   top: 1vw;
   border: solid;
@@ -66,7 +66,7 @@
   .admin-update,.admin-delete {
     margin: .5vw;
     padding: .5vw;
-    width: 2vw;
+    width: 40vw;
     left: .5vw;
     top: .5vw;
   }
