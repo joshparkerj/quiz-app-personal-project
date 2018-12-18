@@ -74,11 +74,21 @@ class App extends Component {
   showContent = () => {
     return (
       <div className="content">
-        <div onChange={this.handleRadio}>
-          <input type="radio" name="content" value="games" /> Play Game
-          <input type="radio" name="content" value="stats" /> See Stats
-          <input type="radio" name="content" value="board" /> Leaderboard
-          <input type="radio" name="content" value="users" /> Similar Users
+        <div className="radio-tabs" onChange={this.handleRadio}>
+          <input type="radio" name="content" value="games" id="radio-games" />
+          <label for="radio-games">Play Game</label>
+          <input type="radio" name="content" value="stats" id="radio-stats" />
+          <label for="radio-stats">See Stats</label>
+          <input type="radio" name="content" value="board" id="radio-board" />
+          <label for="radio-board">Leaderboard</label>
+          <input type="radio" name="content" value="users" id="radio-users" />
+          <label for="radio-users">Similar Users</label>
+          {this.state.admin ? (
+            <span>
+              <input type="radio" name="content" value="admin" id="radio-admin" />
+              <label for="radio-admin">Admin Options</label>
+            </span>
+          ) : ''}
         </div>
         {
           this.state.content === 'games' ?
@@ -89,7 +99,9 @@ class App extends Component {
                 <Leaderboard /> :
                 this.state.content === 'users' ?
                   <SimilarUsers /> :
-                  "I don't know what to show..."
+                  this.state.content === 'admin' ?
+                    <Admin /> :
+                    "I don't know what to show..."
         }
       </div>
     )
@@ -99,10 +111,6 @@ class App extends Component {
     this.setState({ content: e.target.value });
   }
 
-  showAdmin = () => {
-    return <Admin />
-  }
-
   render() {
     return (
       <div className="app">
@@ -110,7 +118,6 @@ class App extends Component {
         <Auth checkAuth={this.checkAuth} loggedin={this.state.loggedin} />
         {this.displayLoginStatus()}
         {this.state.loggedin ? this.showContent() : ''}
-        {this.state.admin ? this.showAdmin() : ''}
       </div>
     )
   }

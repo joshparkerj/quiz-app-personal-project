@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { getMyStats, getAllStats } from '../api';
+import { colSort } from '../utils';
+import './show-stats.css';
 
 let myStats = [];
 let allStats = [];
@@ -43,44 +45,14 @@ class ShowStats extends Component {
     return (
       <tr className="statcat" key={i}>
         {columnKeys.map((f, i) => {
-          return <td key={i}>{e[f]}</td>
+          return <td key={i}>{String(e[f]).replace(/_/g,' ')}</td>
         })}
       </tr>
     )
   }
 
   colSort = (column, alpha = false) => {
-    if (this.state.sorting[column] === '⇵') {
-      this.setState({
-        sorting: this.state.sorting.map((e, i) => i === column ? '↓' : '⇵'),
-        stats: this.state.stats.sort(this.makeSorters(column, 'd', alpha))
-      })
-    } else if (this.state.sorting[column] === '↓') {
-      this.setState({
-        sorting: this.state.sorting.map((e, i) => i === column ? '↑' : '⇵'),
-        stats: this.state.stats.sort(this.makeSorters(column, 'a', alpha))
-      })
-    } else {
-      this.setState({
-        sorting: sortingInit,
-        stats: myStats.map(this.statInitializer)
-      })
-    }
-  }
-
-  makeSorters = (c, d, alpha) => {
-    if (alpha) {
-      return (a, b) => {
-        const au = a[columnKeys[c]].toUpperCase();
-        const bu = b[columnKeys[c]].toUpperCase();
-        let decision = au < bu ? -1 : bu < au ? 1 : 0;
-        return d === 'd' ? -decision : decision;
-      }
-    }
-    return (a, b) => {
-      return d === 'd' ? b[columnKeys[c]] - a[columnKeys[c]] :
-        a[columnKeys[c]] - b[columnKeys[c]];
-    }
+    this.setState(colSort(columnKeys, column, this.state.sorting, sortingInit, this.state.stats, myStats.map(this.statInitializer),'stats',alpha));
   }
 
   render() {

@@ -57,7 +57,13 @@ export function getWikiCategories() {
 
 export function createGame(category, count) {
   return axios.get(`${api_address}create-game/${category}/${count}`)
-    .then(r)
+    .then(r => {
+      if(Number(r.status) === 204){
+        return 'count too high';
+      }else{
+        return r.data;
+      }
+    })
     .catch(err)
 }
 

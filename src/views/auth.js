@@ -8,6 +8,7 @@ import {
   emitLogIn
 } from '../socket-api';
 import { toast } from 'react-toastify';
+import './auth.css';
 
 class Auth extends Component {
 
@@ -81,7 +82,6 @@ class Auth extends Component {
     if (!this.props.loggedin) {
       return (
         <div className="auth">
-          <div className="auth-inputs">
             <label>Username:</label>
             <input
               name="usernameInput"
@@ -93,8 +93,7 @@ class Auth extends Component {
               name="passwordInput"
               value={this.state.passwordInput}
               onChange={this.handlePassword} />
-          </div>
-          <div className="auth-buttons">
+            <span></span>
             <button
               onClick={this.login}
               disabled={this.state.disableButtons}
@@ -103,7 +102,6 @@ class Auth extends Component {
               onClick={this.register}
               disabled={this.state.disableButtons}
             >register</button>
-          </div>
         </div>
       )
     } else {

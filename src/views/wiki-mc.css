@@ -1,0 +1,39 @@
+.wiki-mc {
+  font-family: 'Crimson Text', serif;
+  border: solid .1vw;
+  width: 75%;
+  margin: auto;
+  margin-top: 1.5vw;
+  padding: .4vw;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.wiki-mc button {
+  grid-column: span 1;
+  padding: .5vw;
+  border-radius: .5vw;
+  border: none;
+}
+
+.image-from-wiki {
+  margin: auto;
+  display: block;
+}
+
+@media (min-width: 960px) {
+
+  .wiki-mc {
+    margin-top: .8vw;
+    padding: .2vw;
+  }
+
+  .wiki-mc button {
+    padding: .3vw;
+    border-radius: .3vw;
+  }
+
+}

@@ -17,6 +17,7 @@ module.exports = {
                 .then(user => {
                   req.session.userid = user[0].id;
                   req.session.username = user[0].username;
+                  req.session.admin = user[0].privilege_level > 0;
                   user.sessionUserId = req.session.userid;
                   res.status(200).send(user);
                 })

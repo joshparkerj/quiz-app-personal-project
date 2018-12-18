@@ -64,6 +64,10 @@ const getCategory = term => {
 
 module.exports = {
     scrapeWiki: (req, res, next) => {
+        if (!req.session.admin){
+            res.status(403).send('permission denied');
+            return;
+        }
         const db = req.app.get('db');
         getCategory(req.params.term)
             .then(output => {

@@ -175,6 +175,10 @@ class JoinCreate extends Component {
   generateGame = () => {
     createGame(this.state.category, this.state.count)
       .then(game => {
+        if(game === 'count too high'){
+          toast.error('couldn\'t get that many questions');
+          return;
+        }
         emitCreateGame({ name: this.state.gamename, content: game });
         this.setState({
           findGameHeading: '',

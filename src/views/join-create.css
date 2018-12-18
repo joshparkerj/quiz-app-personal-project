@@ -5,17 +5,32 @@
 
 .join-create-forms input,.join-create-forms label {
   grid-column: span 1;
-  margin: 10px;
+  margin: 1vw;
 }
 
 .join-create-forms button {
   grid-column: span 2;
-  font-size: 20px;
-  padding: 10px;
-  border-radius: 20px;
-  box-shadow: 0 8px 4px rgba(0,0,0,0.3);
+  font-size: 2vw;
+  padding: 1vw;
+  border-radius: 2vw;
+  box-shadow: 0 .8vw .4vw rgba(0,0,0,0.3);
 }
 
 .join-create-forms h2 {
   grid-column: span 2;
+}
+
+@media (min-width: 960px) {
+
+  .join-create-forms input,.join-create-forms label {
+    margin: .5vw;
+  }
+
+  .join-create-forms button {
+    font-size: 1vw;
+    padding: .5vw;
+    border-radius: 1vw;
+    box-shadow: 0 .4vw .2vw rgba(0,0,0,0.3);
+  }
+
 }

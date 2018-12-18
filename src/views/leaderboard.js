@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import { getMyProgress, getProgressLeaderboard } from '../api';
+import { colSort } from '../utils';
+import './leaderboard.css';
 
+let mp = [];
+const sortingInit = ['⇵', '⇵', '⇵', '⇵'];
+const columnKeys = ['category', 'correctly_answered',
+  'questions_total', 'percent_correctly_answered'];
 const ap = (acc, e) => {
-  acc.x = Number(e.correctly_answered)+Number(acc.x);
-  acc.y = Number(e.questions_total)+Number(acc.y);
+  acc.x = Number(e.correctly_answered) + Number(acc.x);
+  acc.y = Number(e.questions_total) + Number(acc.y);
   acc.avg = acc.x / acc.y;
   return acc;
 }
@@ -14,12 +20,17 @@ class Leaderboard extends Component {
     super();
     this.state = {
       myProgress: [],
-      leaderboard: []
+      leaderboard: [],
+      sorting: sortingInit
     }
   }
 
   componentDidMount() {
     getMyProgress()
+      .then(r => {
+        mp = r;
+        return mp;
+      })
       .then(r => {
         this.setState({ myProgress: r })
       })
@@ -29,13 +40,16 @@ class Leaderboard extends Component {
       })
   }
 
+  colSort = (column, alpha = false) => {
+    this.setState(colSort(columnKeys, column, this.state.sorting, sortingInit, this.state.myProgress, mp, 'myProgress', alpha))
+  }
+
   progressMapper = (e, i) => {
     return (
       <tr className="progcat" key={i}>
-        <td>{e.category}</td>
-        <td>{e.correctly_answered}</td>
-        <td>{e.questions_total}</td>
-        <td>{e.percent_correctly_answered}</td>
+        {columnKeys.map((f, i) => {
+          return <td key={i}>{e[f]}</td>
+        })}
       </tr>
     )
   }
@@ -47,7 +61,7 @@ class Leaderboard extends Component {
         <td><strong>Overall Progress:</strong></td>
         <td>{op.x}</td>
         <td>{op.y}</td>
-        <td>{(op.avg*100).toFixed(1)}</td>
+        <td>{(op.avg * 100).toFixed(1)}</td>
       </tr>
     )
   }
@@ -58,7 +72,7 @@ class Leaderboard extends Component {
         <td>{e.username}</td>
         <td>{e.progress.x}</td>
         <td>{e.progress.y}</td>
-        <td>{(e.progress.avg*100).toFixed(1)}</td>
+        <td>{(e.progress.avg * 100).toFixed(1)}</td>
       </tr>
     )
   }
@@ -67,17 +81,21 @@ class Leaderboard extends Component {
     return (
       <table className="leaderboard">
         <tr>
-          <th>Category</th>
-          <th>Correctly Answered</th>
-          <th>Total Questions</th>
-          <th>Percent Answered</th>
+          <th>Category<button onClick={() => this.colSort(0, true)}>
+            {this.state.sorting[0]}</button></th>
+          <th>Correctly Answered<button onClick={() => this.colSort(1)}>
+            {this.state.sorting[1]}</button></th>
+          <th>Total Questions<button onClick={() => this.colSort(2)}>
+            {this.state.sorting[2]}</button></th>
+          <th>Percent Answered<button onClick={() => this.colSort(3)}>
+            {this.state.sorting[3]}</button></th>
         </tr>
         {
           this.state.myProgress.length > 0 ?
             this.state.myProgress.map(this.progressMapper) :
             ''
         }
-        <tr></tr>
+        <tr className="end-of-personal-progress"></tr>
         {
           this.state.myProgress.length > 0 ?
             this.overallProgress() : ''

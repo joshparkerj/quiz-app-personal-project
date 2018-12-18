@@ -74,11 +74,11 @@ module.exports = {
       .then(r => {
         if (!r.length) {
           res.status(404).send('no question found');
-          return;
+          return 'pass';
         }
         if (r.length != req.params.count) {
-          res.status(404).send('couldn\'t get that many questions');
-          return;
+          res.status(204).send('couldn\'t get that many questions');
+          return 'pass';
         }
         r.map((e, i) => {
           rts[i] = {};
@@ -99,6 +99,9 @@ module.exports = {
         )
       })
       .then(r => {
+        if(r==='pass'){
+          return 'pass';
+        }
         rts.map((e, i) => {
           r[i].forEach(f => e.answers.push(f.answer));
           e.answers = fyshuffle(e.answers);
@@ -111,12 +114,20 @@ module.exports = {
       .catch(err('create game failed', res));
   },
   getEntireCategory: (req, res, next) => {
+    if (!req.session.admin){
+      res.status(403).send('permission denied');
+      return;
+    }
     const db = req.app.get('db');
     db.get_all_questions_in_category([req.params.category])
       .then(r(200, res))
       .catch(err('get entire category failed', res));
   },
   deleteWikiQuestion: (req,res,next) => {
+    if (!req.session.admin){
+      res.status(403).send('permission denied');
+      return;
+    }
     const db = req.app.get('db');
     db.remove_refs_to_question([req.params.id])
       .then(r => {
@@ -126,6 +137,10 @@ module.exports = {
       .catch(err('delete wiki question failed', res));
   },
   updateWikiQuestion: (req,res,next) => {
+    if (!req.session.admin){
+      res.status(403).send('permission denied');
+      return;
+    }
     const db = req.app.get('db');
     db.update_wiki_question([req.params.id,req.body.text])
       .then(r(200,res))

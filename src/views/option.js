@@ -1,8 +1,11 @@
 import React from 'react';
+import './option.css';
 
-function Option(props){
+function Option(props) {
   return (
-    <button onClick={() => props.hc(props.text)}>
+    <button
+      className={`option${props.num}`}
+      onClick={() => props.hc(props.text)}>
       {props.text}
     </button>
   )

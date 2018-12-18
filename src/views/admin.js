@@ -51,7 +51,12 @@ class Admin extends Component {
     })
     scrapeWiki(this.state.term)
       .then(r => {
+        return getWikiCategories()
+      })
+      .then(cats => {
         this.setState({
+          category: cats[0].category,
+          categories: cats,
           disablescrape: false,
           scrapebuttontext: "Scrape Wiki"
         })
@@ -88,7 +93,7 @@ class Admin extends Component {
     return (
       <div className={`question${e.id}`} key={i}>
         <h4>{e.answer}</h4>
-        <p>{e.text}</p>
+        <p className="admin-qtext">{e.text}</p>
         <button onClick={() => this.deleteQuestion(e.id, e.answer)}>
           Delete This Question
         </button>

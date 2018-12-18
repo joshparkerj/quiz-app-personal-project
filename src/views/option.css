@@ -1,0 +1,15 @@
+.wiki-mc .option0 {
+  background: linear-gradient(rgba(255,0,125,0.5),rgba(255,125,0,0.5));
+}
+
+.wiki-mc .option1 {
+  background: linear-gradient(rgba(255,125,0,0.5),rgba(125,255,0,0.5));
+}
+
+.wiki-mc .option2 {
+  background: linear-gradient(rgba(125,255,0,0.5),rgba(0,255,125,0.5));
+}
+
+.wiki-mc .option3 {
+  background: linear-gradient(rgba(0,255,125,0.5),rgba(0,125,255,0.5));
+}

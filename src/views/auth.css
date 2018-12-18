@@ -1,0 +1,24 @@
+.auth {
+  background-color: rgba(255,255,255,0.7);
+  padding: 2vw;
+  display: grid;
+  width: 50%;
+  margin: auto;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.auth label,.auth button {
+  grid-column: span 1;
+  display: block;
+}
+
+.auth input {
+  grid-column: span 2;
+  display: block;
+}
+
+@media (min-width: 960px) {
+  .auth {
+    padding: 1vw;
+  }
+}

@@ -1,0 +1,22 @@
+.similar-users {
+  margin-top: 8vw;
+}
+
+.similar-users h2 {
+  position: absolute;
+  top: 13vw;
+  padding-bottom: 1vw;
+  border-bottom: solid;
+}
+
+@media (min-width: 960px) {
+
+  .similar-users {
+    margin-top: 4vw;
+  }
+
+  .similar-users h2 {
+    top: 6.5vw;
+    padding-bottom: .5vw;
+  }
+}

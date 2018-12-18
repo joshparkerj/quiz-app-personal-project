@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { getSimilarUsers } from '../api';
+import './similar-users.css';
 
 class SimilarUsers extends Component {
 
@@ -21,7 +22,7 @@ class SimilarUsers extends Component {
     return (
       <tr className="user" key={i}>
         <td>{e.username}</td>
-        <td>{e.score}</td>
+        <td>{(e.score*100).toFixed(1)}</td>
       </tr>
     )
   }

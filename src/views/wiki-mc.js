@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Option from './option';
+import './wiki-mc.css';
 
 class WikiMC extends Component {
 
@@ -9,6 +10,7 @@ class WikiMC extends Component {
         hc={this.props.hc}
         key={i}
         text={e}
+        num={i}
       />
     )
   }
@@ -16,14 +18,18 @@ class WikiMC extends Component {
   render() {
     return (
       <div className="wiki-mc">
-        <img
-          className="image-from-wiki"
-          src={this.props.imgUrl || '/no_image.png'}
-          alt="hope this helps!"
-          onError={i => i.target.src = '/no_image.png'}
-        />
-        {this.props.wikiText}
-        {this.props.wikiAnswers.map(this.optionMapper)}
+        {this.props.imgUrl && this.props.imgUrl !== 'https://undefined' ? (
+          <img
+            className="image-from-wiki"
+            src={this.props.imgUrl}
+            alt="hope this helps!"
+            onError={i => i.target.style.display = 'none'}
+          />
+        ) : ''}
+        <p>{this.props.wikiText}</p>
+        <div className="options">
+          {this.props.wikiAnswers.map(this.optionMapper)}
+        </div>
       </div>
     )
   }
