@@ -6,7 +6,7 @@ const r = (status, res) => {
 
 const err = (message, res) => {
   return err => {
-    res.status(500).send(message);
+    res.status(400).send(message);
     console.log(err);
   }
 }

@@ -22,7 +22,7 @@ class SimilarUsers extends Component {
     return (
       <tr className="user" key={i}>
         <td>{e.username}</td>
-        <td>{(e.score*100).toFixed(1)}</td>
+        <td>{(e.score * 100).toFixed(1)}</td>
       </tr>
     )
   }
@@ -36,9 +36,12 @@ class SimilarUsers extends Component {
           <th>Similarity Score</th>
         </tr>
         {
-          this.state.similarUsers.length > 0 ?
-            this.state.similarUsers.map(this.userMapper) :
-            ''
+          this.state.similarUsers === 'try answering some questions first' ?
+            <h1>No similar users available.
+            Try answering some quiz questions!</h1> :
+            this.state.similarUsers.length > 0 ?
+              this.state.similarUsers.map(this.userMapper) :
+              ''
         }
       </table>
     )
