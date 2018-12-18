@@ -1,11 +1,11 @@
 .join-create-forms {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr;
   display: grid;
 }
 
 .join-create-forms input,.join-create-forms label {
   grid-column: span 1;
-  margin: 1vw;
+  margin: 1vw 0;
 }
 
 .join-create-forms button {
@@ -23,7 +23,7 @@
 @media (min-width: 960px) {
 
   .join-create-forms input,.join-create-forms label {
-    margin: .5vw;
+    margin: .5vw 0;
   }
 
   .join-create-forms button {
