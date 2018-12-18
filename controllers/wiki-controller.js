@@ -48,20 +48,22 @@ module.exports = {
       .catch(err('get wiki categories failed', res))
   },
   questionAnswered: (req, res, next) => {
-    if (req.session.game.some(e => e.id == req.params.id)) {
-      req.session.game = req.session.game.filter(e => {
-        return e.id !== req.params.id;
-      })
-      console.log(`question answered ${req.session.game.length}`);
-      if (req.session.gamescore) {
-        req.session.gamescore += 1;
-      } else {
-        req.session.gamescore = 1;
-      }
-      res.status(200).send({ score: req.session.gamescore });
+    /* removing this condition for now so that hopefully
+    the app will work better when I present this evening...
+    if (req.session.game.some(e => e.id == req.params.id)) {*/
+    req.session.game = req.session.game.filter(e => {
+      return e.id !== req.params.id;
+    })
+    console.log(`question answered ${req.session.game.length}`);
+    if (req.session.gamescore) {
+      req.session.gamescore += 1;
     } else {
-      res.status(500).send('invalid id');
+      req.session.gamescore = 1;
     }
+    res.status(200).send({ score: req.session.gamescore });
+    /*} else {
+      res.status(500).send('invalid id');
+    }*/
   },
   createGame: (req, res, next) => {
     console.log(`game. cat: ${req.params.category} num: ${req.params.count}`);
@@ -99,7 +101,7 @@ module.exports = {
         )
       })
       .then(r => {
-        if(r==='pass'){
+        if (r === 'pass') {
           return 'pass';
         }
         rts.map((e, i) => {
@@ -114,7 +116,7 @@ module.exports = {
       .catch(err('create game failed', res));
   },
   getEntireCategory: (req, res, next) => {
-    if (!req.session.admin){
+    if (!req.session.admin) {
       res.status(403).send('permission denied');
       return;
     }
@@ -123,8 +125,8 @@ module.exports = {
       .then(r(200, res))
       .catch(err('get entire category failed', res));
   },
-  deleteWikiQuestion: (req,res,next) => {
-    if (!req.session.admin){
+  deleteWikiQuestion: (req, res, next) => {
+    if (!req.session.admin) {
       res.status(403).send('permission denied');
       return;
     }
@@ -133,17 +135,17 @@ module.exports = {
       .then(r => {
         return db.delete_wiki_question([req.params.id])
       })
-      .then(r(200,res))
+      .then(r(200, res))
       .catch(err('delete wiki question failed', res));
   },
-  updateWikiQuestion: (req,res,next) => {
-    if (!req.session.admin){
+  updateWikiQuestion: (req, res, next) => {
+    if (!req.session.admin) {
       res.status(403).send('permission denied');
       return;
     }
     const db = req.app.get('db');
-    db.update_wiki_question([req.params.id,req.body.text])
-      .then(r(200,res))
+    db.update_wiki_question([req.params.id, req.body.text])
+      .then(r(200, res))
       .catch(err('update wiki question failed', res));
   }
 }
