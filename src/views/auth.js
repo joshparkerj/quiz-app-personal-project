@@ -16,11 +16,24 @@ class Auth extends Component {
     this.state = {
       usernameInput: '',
       passwordInput: '',
+      disableButtons: true
     }
   }
 
-  handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+  handleUsername = e => {
+    this.setState({
+      usernameInput: e.target.value,
+      disableButtons: e.target.value.length === 0 ||
+        this.state.passwordInput.length === 0
+    });
+  }
+
+  handlePassword = e => {
+    this.setState({
+      passwordInput: e.target.value,
+      disableButtons: e.target.value.length === 0 ||
+        this.state.usernameInput.length === 0
+    });
   }
 
   login = () => {
@@ -73,17 +86,23 @@ class Auth extends Component {
             <input
               name="usernameInput"
               value={this.state.usernameInput}
-              onChange={this.handleChange} />
+              onChange={this.handleUsername} />
             <label>Password:</label>
             <input
               type="password"
               name="passwordInput"
               value={this.state.passwordInput}
-              onChange={this.handleChange} />
+              onChange={this.handlePassword} />
           </div>
           <div className="auth-buttons">
-            <button onClick={this.login}>login</button>
-            <button onClick={this.register}>register</button>
+            <button
+              onClick={this.login}
+              disabled={this.state.disableButtons}
+            >login</button>
+            <button
+              onClick={this.register}
+              disabled={this.state.disableButtons}
+            >register</button>
           </div>
         </div>
       )

@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import JoinCreate from './views/join-create';
 import ShowStats from './views/show-stats';
 import Leaderboard from './views/leaderboard';
+import SimilarUsers from './views/similar-users';
 import Admin from './views/admin';
 
 class App extends Component {
@@ -77,6 +78,7 @@ class App extends Component {
           <input type="radio" name="content" value="games" /> Play Game
           <input type="radio" name="content" value="stats" /> See Stats
           <input type="radio" name="content" value="board" /> Leaderboard
+          <input type="radio" name="content" value="users" /> Similar Users
         </div>
         {
           this.state.content === 'games' ?
@@ -85,7 +87,9 @@ class App extends Component {
               <ShowStats /> :
               this.state.content === 'board' ?
                 <Leaderboard /> :
-                "I don't know what to show..."
+                this.state.content === 'users' ?
+                  <SimilarUsers /> :
+                  "I don't know what to show..."
         }
       </div>
     )

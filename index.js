@@ -60,6 +60,8 @@ app.get('/api/userprogress/me',statc.userProgress);
 
 app.get('/api/progressleaderboard',statc.progressLeaderboard);
 
+app.get('/api/similarusers',statc.getSimilarUsers);
+
 app.post('/setgameonsession',nc.setGameOnSession);
 
 app.post('/leavegamesession',nc.leaveGameSession);

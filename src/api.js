@@ -1,11 +1,8 @@
 import axios from 'axios';
 
 const api_address = "/";
-
 const err = err => console.error(err);
-const r = r => {
-  return r.data;
-};
+const r = r => r.data;
 
 export function postUser(username, password) {
   return axios.post(`${api_address}user`, {
@@ -104,6 +101,12 @@ export function getMyProgress() {
 
 export function getProgressLeaderboard() {
   return axios.get(`${api_address}api/progressleaderboard`)
+    .then(r)
+    .catch(err)
+}
+
+export function getSimilarUsers() {
+  return axios.get(`${api_address}api/similarusers`)
     .then(r)
     .catch(err)
 }

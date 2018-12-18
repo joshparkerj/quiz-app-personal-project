@@ -61,5 +61,21 @@ module.exports = {
       })
       .then(r(200, res))
       .catch(err('get progress leaderboard failed', res))
+  },
+  getSimilarUsers: (req,res,next) => {
+    const db = req.app.get('db');
+    db.get_other_users([req.session.userid])
+      .then(r => {
+        return Promise.all(
+          r.map(e => {
+            return db.get_similarity_score([req.session.userid,e.id])
+          })
+        )
+      })
+      .then(r => {
+        return r.map(e=>e[0]).sort((a,b) => b.score - a.score).slice(0,10);
+      })
+      .then(r(200,res))
+      .catch(err('get similar users failed',res))
   }
 }

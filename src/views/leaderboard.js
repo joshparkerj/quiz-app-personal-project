@@ -47,7 +47,7 @@ class Leaderboard extends Component {
         <td><strong>Overall Progress:</strong></td>
         <td>{op.x}</td>
         <td>{op.y}</td>
-        <td>{op.avg.toFixed(1)}</td>
+        <td>{(op.avg*100).toFixed(1)}</td>
       </tr>
     )
   }
@@ -58,7 +58,7 @@ class Leaderboard extends Component {
         <td>{e.username}</td>
         <td>{e.progress.x}</td>
         <td>{e.progress.y}</td>
-        <td>{e.progress.avg.toFixed(1)}</td>
+        <td>{(e.progress.avg*100).toFixed(1)}</td>
       </tr>
     )
   }
