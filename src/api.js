@@ -114,7 +114,7 @@ export function getProgressLeaderboard() {
 export function getSimilarUsers() {
   return axios.get(`${api_address}api/similarusers`)
     .then(r => {
-      if(Number(r.status) === 400){
+      if(Number(r.status) === 204){
         return 'try answering some questions first';
       }else{
         return r.data;

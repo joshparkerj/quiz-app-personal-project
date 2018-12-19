@@ -6,7 +6,7 @@ const r = (status, res) => {
 
 const err = (message, res) => {
   return err => {
-    res.status(400).send(message);
+    res.status(500).send(message);
     console.log(err);
   }
 }
@@ -76,6 +76,9 @@ module.exports = {
         return r.map(e=>e[0]).sort((a,b) => b.score - a.score).slice(0,10);
       })
       .then(r(200,res))
-      .catch(err('get similar users failed',res))
+      .catch(err => {
+        console.error(err);
+        res.status(204).send('get similar users failed');
+      })
   }
 }
