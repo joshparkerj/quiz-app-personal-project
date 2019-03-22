@@ -1,3 +1,8 @@
+const fs = require('fs');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/joshquizzes.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/joshquizzes.com/fullchain.pem', 'utf8');
+const credentials = {key: privateKey, cert: certificate};
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const nc = require('./controllers/nodb-controller');
@@ -9,9 +14,16 @@ const statc = require('./controllers/stats-controller');
 const massive = require('massive');
 const dotenv = require('dotenv').config();
 const session = require('express-session');
+
 const app = express();
+
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const https = require('https').createServer(credentials, app);
+
+const socketLib = require('socket.io');
+const io = socketLib(http);
+const secio = socketLib(https);
+
 const sesh = session({
   secret: process.env.SEC,
   resave: true,
@@ -20,7 +32,14 @@ const sesh = session({
 
 app.use(bodyParser.json());
 
-massive(process.env.DBURI)
+massive({
+  host: 'localhost',
+  port: 5432,
+  database: 'qapp',
+  user: 'postgres',
+  ssl: false,
+  poolSize: 10
+})
   .then(db => {
     app.set('db',db);})
   .catch(err => {
@@ -73,5 +92,7 @@ app.post('/api/auth/logout',nc.logout);
 app.get('*',nc.getReact);
 
 io.on('connection',sockc.connect);
+secio.on('connection',sockc.connect);
 
 http.listen(process.env.PORT || 8080);
+https.listen(process.env.SECPORT || 8443);
