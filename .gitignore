@@ -6,3 +6,4 @@ sql-notes.txt
 user-notes.txt
 .env
 __snapshots__
+dist/

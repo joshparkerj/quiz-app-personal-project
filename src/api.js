@@ -1,150 +1,151 @@
 import axios from 'axios';
+import debug from 'debug';
 
-const api_address = "/";
-const err = err => console.error(err);
-const r = r => r.data;
+const apiAddress = '/';
+const handleError = (err) => debug('api')(err);
+const handleResponse = (r) => r.data;
 
 export function postUser(username, password) {
-  return axios.post(`${api_address}user`, {
-    username: username,
-    password: password
+  return axios.post(`${apiAddress}user`, {
+    username,
+    password,
   })
-    .then(r)
-    .catch(err)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function authenticateUser(username, password) {
-  return axios.post(`${api_address}user-login`, {
-    username: username,
-    password: password
+  return axios.post(`${apiAddress}user-login`, {
+    username,
+    password,
   })
-    .then(r)
-    .catch(err)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getApiAuthMe() {
-  return axios.get(`${api_address}api/auth/me`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}api/auth/me`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function logout() {
-  return axios.post(`${api_address}api/auth/logout`, {})
-    .then(r)
-    .catch(err)
+  return axios.post(`${apiAddress}api/auth/logout`, {})
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function scrapeWiki(term) {
-  return axios.get(`${api_address}questions/mc/new/scrape/${term}`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}questions/mc/new/scrape/${term}`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function wikiSelection(id, choice) {
-  return axios.post(`${api_address}wiki-quiz/submit-choice`, {
-    id: id,
-    choice: choice
+  return axios.post(`${apiAddress}wiki-quiz/submit-choice`, {
+    id,
+    choice,
   })
-    .then(r)
-    .catch(err)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getWikiCategories() {
-  return axios.get(`${api_address}wiki-quiz/categories`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}wiki-quiz/categories`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function createGame(category, count) {
-  return axios.get(`${api_address}create-game/${category}/${count}`)
-    .then(r => {
-      if(Number(r.status) === 204){
+  return axios.get(`${apiAddress}create-game/${category}/${count}`)
+    .then((r) => {
+      if (Number(r.status) === 204) {
         return 'count too high';
-      }else{
-        return r.data;
       }
+
+      return r.data;
     })
-    .catch(err)
+    .catch(handleError);
 }
 
 export function questionAnswered(id) {
-  return axios.post(`${api_address}question-answered/${id}`)
-    .then(r)
-    .catch(err)
+  return axios.post(`${apiAddress}question-answered/${id}`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function setGameOnSession(game) {
-  return axios.post(`${api_address}setgameonsession`, {
-    game: game
+  return axios.post(`${apiAddress}setgameonsession`, {
+    game,
   })
-    .then(r)
-    .catch(err)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function leaveGameSession() {
-  return axios.post(`${api_address}leavegamesession`)
-    .then(r)
-    .catch(err)
+  return axios.post(`${apiAddress}leavegamesession`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getMyStats() {
-  return axios.get(`${api_address}api/userstats/me`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}api/userstats/me`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getAllStats() {
-  return axios.get(`${api_address}api/allstats`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}api/allstats`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getMyProgress() {
-  return axios.get(`${api_address}api/userprogress/me`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}api/userprogress/me`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getProgressLeaderboard() {
-  return axios.get(`${api_address}api/progressleaderboard`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}api/progressleaderboard`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getSimilarUsers() {
-  return axios.get(`${api_address}api/similarusers`)
-    .then(r => {
-      if(Number(r.status) === 204){
+  return axios.get(`${apiAddress}api/similarusers`)
+    .then((r) => {
+      if (Number(r.status) === 204) {
         return 'try answering some questions first';
-      }else{
-        return r.data;
       }
+
+      return r.data;
     })
-    .catch(err)
+    .catch(handleError);
 }
 
 export function resetScore() {
-  return axios.post(`${api_address}resetscore`)
-    .then(r)
-    .catch(err)
+  return axios.post(`${apiAddress}resetscore`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
 export function getEntireCategory(category) {
-  return axios.get(`${api_address}admin/getcat/${category}`)
-    .then(r)
-    .catch(err)
+  return axios.get(`${apiAddress}admin/getcat/${category}`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
-export function deleteWikiQuestion(id){
-  return axios.delete(`${api_address}admin/delete/${id}`)
-    .then(r)
-    .catch(err)
+export function deleteWikiQuestion(id) {
+  return axios.delete(`${apiAddress}admin/delete/${id}`)
+    .then(handleResponse)
+    .catch(handleError);
 }
 
-export function updateWikiQuestion(id,text){
-  return axios.put(`${api_address}admin/update/${id}`,{
-    text: text
+export function updateWikiQuestion(id, text) {
+  return axios.put(`${apiAddress}admin/update/${id}`, {
+    text,
   })
-    .then(r)
-    .catch(err)
+    .then(handleResponse)
+    .catch(handleError);
 }

@@ -1,84 +1,68 @@
-const r = (status, res) => {
-  return r => {
-    res.status(status).send(r);
-  }
-}
+const debug = require('debug')('stats-controller');
 
-const err = (message, res) => {
-  return err => {
-    res.status(500).send(message);
-    console.log(err);
-  }
-}
+const handleResponse = (status, res) => (r) => {
+  res.status(status).send(r);
+};
+
+const handleError = (message, res) => (err) => {
+  res.status(500).send(message);
+  debug(err);
+};
 
 const ap = (acc, e) => {
   acc.x = Number(e.correctly_answered) + Number(acc.x);
   acc.y = Number(e.questions_total) + Number(acc.y);
   acc.avg = acc.x / acc.y;
   return acc;
-}
+};
 
 module.exports = {
-  globalStats: (req, res, next) => {
+  globalStats: (req, res) => {
     const db = req.app.get('db');
     db.get_all_time_stats()
-      .then(r(200, res))
-      .catch(err('get global stats failed', res))
+      .then(handleResponse(200, res))
+      .catch(handleError('get global stats failed', res));
   },
-  userStats: (req, res, next) => {
+  userStats: (req, res) => {
     const db = req.app.get('db');
     db.get_all_time_user_stats([req.session.userid])
-      .then(r(200, res))
-      .catch(err('get user stats failed', res))
+      .then(handleResponse(200, res))
+      .catch(handleError('get user stats failed', res));
   },
-  userProgress: (req, res, next) => {
+  userProgress: (req, res) => {
     const db = req.app.get('db');
     db.get_user_progress([req.session.userid])
-      .then(r(200, res))
-      .catch(err('get user progress failed', res))
+      .then(handleResponse(200, res))
+      .catch(handleError('get user progress failed', res));
   },
-  progressLeaderboard: (req, res, next) => {
+  progressLeaderboard: (req, res) => {
     const db = req.app.get('db');
     db.get_all_users()
-      .then(r => {
-        return Promise.all(
-          r.map(e => {
-            return db.get_user_progress([e.id]);
-          })
-        )
-      })
-      .then(r => {
-        return r.sort((a, b) => {
-          let apr = a.reduce(ap, {x:0,y:0});
-          let bpr = b.reduce(ap, {x:0,y:0});
-          return bpr.x - apr.x;
-        }).map(e => {
-          return {
-            username: e[0].username,
-            progress: e.reduce(ap, { x: 0, y: 0 })
-          };
-        }).slice(0, 10);
-      })
-      .then(r(200, res))
-      .catch(err('get progress leaderboard failed', res))
+      .then((r) => Promise.all(
+        r.map((e) => db.get_user_progress([e.id])),
+      ))
+      .then((r) => r.sort((a, b) => {
+        const apr = a.reduce(ap, { x: 0, y: 0 });
+        const bpr = b.reduce(ap, { x: 0, y: 0 });
+        return bpr.x - apr.x;
+      }).map((e) => ({
+        username: e[0].username,
+        progress: e.reduce(ap, { x: 0, y: 0 }),
+      })).slice(0, 10))
+      .then(handleResponse(200, res))
+      .catch(handleError('get progress leaderboard failed', res));
   },
-  getSimilarUsers: (req,res,next) => {
+  getSimilarUsers: (req, res) => {
     const db = req.app.get('db');
     db.get_other_users([req.session.userid])
-      .then(r => {
-        return Promise.all(
-          r.map(e => {
-            return db.get_similarity_score([req.session.userid,e.id])
-          })
-        )
-      })
-      .then(r => {
-        return r.map(e=>e[0]).sort((a,b) => b.score - a.score).slice(0,10);
-      })
-      .then(r(200,res))
-      .catch(err => {
-        console.error(err);
+      .then((r) => Promise.all(
+        r.map((e) => db.get_similarity_score([req.session.userid, e.id])),
+      ))
+      .then((r) => r.map((e) => e[0]).sort((a, b) => b.score - a.score).slice(0, 10))
+      .then(handleResponse(200, res))
+      .catch((err) => {
+        debug(err);
         res.status(204).send('get similar users failed');
-      })
-  }
-}
+      });
+  },
+};

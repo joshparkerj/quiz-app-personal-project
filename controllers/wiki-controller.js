@@ -1,151 +1,150 @@
-const r = (status, res) => {
-  return r => {
-    res.status(status).send(r);
-  }
-}
+const debug = require('debug')('wiki-controller');
 
-const err = (message, res) => {
-  return err => {
-    res.status(500).send(message);
-    console.log(err);
-  }
-}
+const handleResponse = (status, res) => (r) => {
+  res.status(status).send(r);
+};
 
-const fyshuffle = a => {
-  var j, x, i;
-  for (i = a.length - 1; i > 0; i--) {
+const handleError = (message, res) => (err) => {
+  res.status(500).send(message);
+  debug(err);
+};
+
+const fyshuffle = (inputArray) => {
+  const a = inputArray.slice();
+  for (let i = a.length - 1, j, x; i > 0; i -= 1) {
     j = Math.floor(Math.random() * (i + 1));
     x = a[i];
     a[i] = a[j];
     a[j] = x;
   }
+
   return a;
-}
+};
 
 module.exports = {
-  checkSubmission: (req, res, next) => {
+  checkSubmission: (req, res) => {
     const db = req.app.get('db');
-    console.log(`submitted: ID: ${req.body.id} Choice: ${req.body.choice}`);
+    debug(`submitted: ID: ${req.body.id} Choice: ${req.body.choice}`);
     db.check_wiki_submission([req.body.id, req.body.choice])
-      .then(r => {
-        let a = !!r.length;
+      .then((r) => {
+        const a = !!r.length;
         db.log_ask([
           req.body.id,
           req.session.userid,
           a,
           0,
           req.body.choice])
-          .then(r => {
-            res.status(a ? 200 : 500).send(a ? 'correct' : 'wrong')
-          })
+          .then(() => {
+            res.status(a ? 200 : 500).send(a ? 'correct' : 'wrong');
+          });
       })
-      .catch(err('check submission failed', res))
+      .catch(handleError('check submission failed', res));
   },
-  getWikiCategories: (req, res, next) => {
+  getWikiCategories: (req, res) => {
     const db = req.app.get('db');
     db.get_wiki_categories()
-      .then(r(200, res))
-      .catch(err('get wiki categories failed', res))
+      .then(handleResponse(200, res))
+      .catch(handleError('get wiki categories failed', res));
   },
-  questionAnswered: (req, res, next) => {
+  questionAnswered: (req, res) => {
     /* removing this condition for now so that hopefully
     the app will work better when I present this evening...
-    if (req.session.game.some(e => e.id == req.params.id)) {*/
-    req.session.game = req.session.game.filter(e => {
-      return e.id !== req.params.id;
-    })
-    console.log(`question answered ${req.session.game.length}`);
+    if (req.session.game.some(e => e.id == req.params.id)) { */
+    req.session.game = req.session.game.filter((e) => e.id !== req.params.id);
+    debug(`question answered ${req.session.game.length}`);
     if (req.session.gamescore) {
       req.session.gamescore += 1;
     } else {
       req.session.gamescore = 1;
     }
+
     res.status(200).send({ score: req.session.gamescore });
-    /*} else {
+    /* } else {
       res.status(500).send('invalid id');
-    }*/
+    } */
   },
-  createGame: (req, res, next) => {
-    console.log(`game. cat: ${req.params.category} num: ${req.params.count}`);
+
+  createGame: (req, res) => {
+    debug(`game. cat: ${req.params.category} num: ${req.params.count}`);
     const db = req.app.get('db');
-    const rts = [];
     db.get_some_wiki_questions_by_category([
       req.params.category,
-      req.params.count
+      req.params.count,
     ])
-      .then(r => {
+      .then((r) => {
         if (!r.length) {
           res.status(404).send('no question found');
-          return 'pass';
-        }
-        if (r.length != req.params.count) {
+        } else if (r.length !== Number(req.params.count)) {
           res.status(204).send('couldn\'t get that many questions');
-          return 'pass';
-        }
-        r.map((e, i) => {
-          rts[i] = {};
-          rts[i].id = e.id;
-          rts[i].text = e.text;
-          rts[i].answers = [e.answer];
-          rts[i].category = e.category;
-          rts[i].img_url = e.img_url;
-        })
-        return Promise.all(
-          rts.map(e => {
-            return db.get_more_wiki_answers([
+        } else {
+          const rts = r.map(({
+            id, text, answer, category, img_url: imgUrl,
+          }) => ({
+            id,
+            text,
+            answers: [answer],
+            category,
+            img_url: imgUrl,
+          }));
+
+          Promise.all(
+            rts.map((e) => db.get_more_wiki_answers([
               e.id,
               e.category,
-              3
-            ])
-          })
-        )
-      })
-      .then(r => {
-        if (r === 'pass') {
-          return 'pass';
+              3,
+            ])),
+          )
+            .then((wikiAnswers) => {
+              const game = rts.map((e) => (
+                {
+                  ...e,
+                  answers: fyshuffle([...e.answers, wikiAnswers.map(({ answer }) => answer)]),
+                }
+              ));
+              req.session.game = game;
+              req.session.gamescore = 0;
+              debug(`saved game to session: ${game}`);
+              res.status(200).send(game);
+            })
+            .catch(handleError('create game failed', res));
         }
-        rts.map((e, i) => {
-          r[i].forEach(f => e.answers.push(f.answer));
-          e.answers = fyshuffle(e.answers);
-        })
-        req.session.game = rts;
-        req.session.gamescore = 0;
-        console.log(`saved game to session: ${rts}`);
-        res.status(200).send(rts);
       })
-      .catch(err('create game failed', res));
+      .catch(handleError('create game failed', res));
   },
-  getEntireCategory: (req, res, next) => {
+
+  getEntireCategory: (req, res) => {
     if (!req.session.admin) {
       res.status(403).send('permission denied');
       return;
     }
+
     const db = req.app.get('db');
     db.get_all_questions_in_category([req.params.category])
-      .then(r(200, res))
-      .catch(err('get entire category failed', res));
+      .then(handleResponse(200, res))
+      .catch(handleError('get entire category failed', res));
   },
-  deleteWikiQuestion: (req, res, next) => {
+  deleteWikiQuestion: (req, res) => {
     if (!req.session.admin) {
       res.status(403).send('permission denied');
       return;
     }
+
     const db = req.app.get('db');
     db.remove_refs_to_question([req.params.id])
-      .then(r => {
-        return db.delete_wiki_question([req.params.id])
-      })
-      .then(r(200, res))
-      .catch(err('delete wiki question failed', res));
+      .then(() => db.delete_wiki_question([req.params.id]))
+      .then(handleResponse(200, res))
+      .catch(handleError('delete wiki question failed', res));
   },
-  updateWikiQuestion: (req, res, next) => {
+
+  updateWikiQuestion: (req, res) => {
     if (!req.session.admin) {
       res.status(403).send('permission denied');
       return;
     }
+
     const db = req.app.get('db');
     db.update_wiki_question([req.params.id, req.body.text])
-      .then(r(200, res))
-      .catch(err('update wiki question failed', res));
-  }
-}
+      .then(handleResponse(200, res))
+      .catch(handleError('update wiki question failed', res));
+  },
+};

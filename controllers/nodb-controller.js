@@ -1,25 +1,30 @@
 const path = require('path');
+const debug = require('debug')('nodb-controller');
 
 module.exports = {
-  getReact: (req,res,next) => {
-    res.sendFile(path.join(__dirname,'../build/index.html'));
+  getReact: (_, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
   },
-  logout: (req,res,next) => {
-    console.log(`${req.session.username} logging out now...`);
+
+  logout: (req, res) => {
+    debug(`${req.session.username} logging out now...`);
     req.session.destroy();
     res.status(204).send();
   },
-  setGameOnSession: (req,res,next) => {
+
+  setGameOnSession: (req, res) => {
     req.session.game = req.body.game;
     res.status(200).send('game set');
   },
-  leaveGameSession: (req,res,next) => {
+
+  leaveGameSession: (req, res) => {
     delete req.session.game;
     req.session.gamescore = 0;
     res.status(200).send('game deleted');
   },
-  resetScore: (req,res,next) => {
+
+  resetScore: (req, res) => {
     req.session.gamescore = 0;
     res.status(200).send('score reset');
-  }
-}
+  },
+};
