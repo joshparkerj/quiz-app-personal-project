@@ -74,7 +74,7 @@ export function questionAnswered(id) {
     return Promise.reject(new Error('id must be a number'));
   }
 
-  return axios.post(`${apiAddress}question-answered/${id}`)
+  return axios.post(`${apiAddress}question-answered`, { id })
     .then(handleResponse)
     .catch(handleError);
 }

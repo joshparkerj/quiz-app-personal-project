@@ -50,7 +50,7 @@ module.exports = {
     /* removing this condition for now so that hopefully
     the app will work better when I present this evening...
     if (req.session.game.some(e => e.id == req.params.id)) { */
-    req.session.game = req.session.game.filter((e) => e.id !== req.params.id);
+    req.session.game = req.session.game.filter((e) => e.id !== req.body.id);
     debug(`question answered ${req.session.game.length}`);
     if (req.session.gamescore) {
       req.session.gamescore += 1;
