@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const massive = require('massive');
 const session = require('express-session');
+const rateLimit = require('express-rate-limit');
+const csrf = require('csurf');
+
 require('dotenv').config();
 
 const app = express();
@@ -22,8 +25,11 @@ const sesh = session({
   secret: process.env.SEC,
   resave: true,
   saveUninitialized: true,
+  cookie: { secure: true },
 });
 
+app.use(rateLimit());
+app.use(csrf({ cookie: true }));
 app.use(bodyParser.json());
 
 massive(process.env.DBURI)

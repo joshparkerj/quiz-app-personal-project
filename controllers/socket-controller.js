@@ -2,7 +2,7 @@
 const debug = require('debug')('socket-controller');
 
 const connectedUsers = {};
-const games = {};
+const games = [];
 
 module.exports = {
   connect: (socket) => {
@@ -27,8 +27,8 @@ module.exports = {
       connectedUsers[socket.nickname] = socket;
     });
 
-    socket.on('check name', (name) => {
-      if (games[name]) {
+    socket.on('check name', (incomingName) => {
+      if (games.find(({ name }) => name === incomingName)) {
         socket.emit('game name unavailable');
       } else {
         socket.emit('game name ok!');
@@ -36,12 +36,10 @@ module.exports = {
     });
 
     socket.on('create game', (game) => {
-      games[game.name] = game;
-      socket.game = game.name;
-      games[game.name].host = socket.nickname;
-      games[game.name].population = 1;
+      socket.game = games.length;
+      games.push({ ...game, host: socket.nickname, population: 1 });
       socket.gamescore = 0;
-      socket.join(game.name);
+      socket.join(socket.game);
       debug(`${socket.nickname} created ${game.name}`);
     });
 
@@ -55,30 +53,37 @@ module.exports = {
       );
     });
 
-    socket.on('join game', (game) => {
-      if (!games[game]) {
+    socket.on('join game', (gameToJoin) => {
+      const gameNumber = games.findIndex(({ name }) => name === gameToJoin);
+      if (gameNumber === -1) {
         socket.emit('unable to join');
       }
 
-      socket.game = game;
+      socket.game = gameNumber;
       socket.gamescore = 0;
-      socket.join(game);
-      debug(`${socket.nickname} joined ${game}`);
-      games[game].population += 1;
-      socket.emit('game info', JSON.stringify(games[game]));
+      socket.join(socket.game);
+      debug(`${socket.nickname} joined ${gameToJoin}`);
+
+      const game = games[socket.game];
+
+      game.population += 1;
+      socket.emit('game info', JSON.stringify(game));
       socket.to(socket.game).emit(
         'join game',
-        JSON.stringify({ r: games[game], n: socket.nickname }),
+        JSON.stringify({ r: game, n: socket.nickname }),
       );
     });
 
     socket.on('leave game', () => {
       if (socket.game && games[socket.game]) {
-        debug(`${socket.nickname} left ${socket.game}`);
+        debug(`${socket.nickname} left ${games[socket.game].name}`);
         socket.to(socket.game).emit('leave game', socket.nickname);
         socket.leave(socket.game);
-        games[socket.game].population -= 1;
-        if (games[socket.game].population === 0) {
+
+        const game = games[socket.game];
+
+        game.population -= 1;
+        if (game.population === 0) {
           delete games[socket.game];
         }
 
@@ -89,8 +94,12 @@ module.exports = {
 
     socket.on('answer question', (qid) => {
       socket.gamescore += 1;
-      games[socket.game].content = games[socket.game].content.filter((e) => e.id !== qid);
-      if (games[socket.game].content.length === 0) {
+
+      const game = games[socket.game];
+
+      game.content = game.content.filter((e) => e.id !== qid);
+      if (game.content.length === 0) {
+        // um... should we really be doing this without emitting any event to clients?
         delete games[socket.game];
       }
 

@@ -32,6 +32,11 @@ const getCatPages = (catUrl) => axios.get(catUrl)
   .catch((err) => debug(err));
 
 const getCategory = (term) => {
+  // check term for any funny business
+  if (!term.match(/^[\w_]+$/)) {
+    return Promise.reject(new Error('Invalid category name'));
+  }
+
   let catList = [];
   return getCatPages(`${url}${cat}${term}`)
     .then((r) => {
