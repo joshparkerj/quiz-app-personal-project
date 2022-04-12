@@ -64,9 +64,13 @@ module.exports = {
       socket.join(socket.game);
       debug(`${socket.nickname} joined ${gameToJoin}`);
 
+      games[socket.game] = {
+        ...games[socket.game],
+        population: games[socket.game].population + 1,
+      };
+
       const game = games[socket.game];
 
-      game.population += 1;
       socket.emit('game info', JSON.stringify(game));
       socket.to(socket.game).emit(
         'join game',
@@ -80,9 +84,13 @@ module.exports = {
         socket.to(socket.game).emit('leave game', socket.nickname);
         socket.leave(socket.game);
 
+        games[socket.game] = {
+          ...games[socket.game],
+          population: games[socket.game].population - 1,
+        };
+
         const game = games[socket.game];
 
-        game.population -= 1;
         if (game.population === 0) {
           delete games[socket.game];
         }
@@ -95,9 +103,12 @@ module.exports = {
     socket.on('answer question', (qid) => {
       socket.gamescore += 1;
 
-      const game = games[socket.game];
+      games[socket.game] = {
+        ...games[socket.game],
+        content: games[socket.game].content.filter(({ id }) => id !== qid),
+      };
 
-      game.content = game.content.filter((e) => e.id !== qid);
+      const game = games[socket.game];
       if (game.content.length === 0) {
         // um... should we really be doing this without emitting any event to clients?
         delete games[socket.game];
