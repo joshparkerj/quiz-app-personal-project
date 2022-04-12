@@ -36,7 +36,7 @@ const WikiMC = function WikiMC({
 };
 
 WikiMC.propTypes = {
-  hc: PropTypes.string.isRequired,
+  hc: PropTypes.func.isRequired,
   imgUrl: PropTypes.string.isRequired,
   wikiText: PropTypes.string.isRequired,
   wikiAnswers: PropTypes.arrayOf(PropTypes.string).isRequired,

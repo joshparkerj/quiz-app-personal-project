@@ -49,24 +49,28 @@ const ShowStats = function ShowStats() {
 
   return (
     <table className="show-stats">
-      <tr>
-        {['Category', 'Your Attempts', 'Your Right Answers', 'Your Percent Correct', 'All Users&apos; Attempts', 'All Users&apos; Right Answers', 'All Users&apos; Percent Correct'].map((e, i) => (
-          <th key={e}>
-            {e}
-            <StatsButton
-              column={i}
-              columnSort={columnSort}
-              sorting={sorting}
-              alpha={i === 0 ? true : undefined}
-            />
-          </th>
-        ))}
-      </tr>
-      {
-        stats.length > 0
-          ? stats.map(statMapper)
-          : ''
-      }
+      <thead>
+        <tr>
+          {['Category', 'Your Attempts', 'Your Right Answers', 'Your Percent Correct', 'All Users&apos; Attempts', 'All Users&apos; Right Answers', 'All Users&apos; Percent Correct'].map((e, i) => (
+            <th key={e}>
+              {e}
+              <StatsButton
+                column={i}
+                columnSort={columnSort}
+                sorting={sorting}
+                alpha={i === 0 ? true : undefined}
+              />
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          stats.length > 0
+            ? stats.map(statMapper)
+            : (<tr />)
+        }
+      </tbody>
     </table>
   );
 };

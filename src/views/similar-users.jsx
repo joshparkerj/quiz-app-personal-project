@@ -43,16 +43,18 @@ const SimilarUsers = function SimilarUsers() {
   };
 
   return (
-    <table className="similar-users">
-      <thead>
-        <h2>Similarity score based on having answered the same questions</h2>
-        <tr>
-          <th>Username</th>
-          <th>Similarity Score</th>
-        </tr>
-      </thead>
-      { tableBody() }
-    </table>
+    <div className="similar-users">
+      <h2>Similarity score based on having answered the same questions</h2>
+      <table className="similar-users">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Similarity Score</th>
+          </tr>
+        </thead>
+        {tableBody()}
+      </table>
+    </div>
   );
 };
 

@@ -72,35 +72,39 @@ const Leaderboard = function Leaderboard() {
 
   return (
     <table className="leaderboard">
-      <tr>
-        {['Category', 'Correctly Answered', 'Total Questions', 'Percent Answered'].map((e, i) => (
-          <th key={e}>
-            {e}
-            <StatsButton
-              column={i}
-              columnSort={columnSort}
-              sorting={sorting}
-              alpha={i === 0 ? true : undefined}
-            />
-          </th>
-        ))}
-      </tr>
-      {
-        myProgress.length > 0
-          ? myProgress.map(progressMapper)
-          : ''
-      }
-      <tr className="end-of-personal-progress" />
-      {
-        myProgress.length > 0
-          ? overallProgress() : ''
-      }
-      <tr />
-      <tr><td><strong>Progress Leaders: </strong></td></tr>
-      {
-        leaderboard.length > 0
-          ? leaderboard.map(leaderboardMapper) : ''
-      }
+      <thead>
+        <tr>
+          {['Category', 'Correctly Answered', 'Total Questions', 'Percent Answered'].map((e, i) => (
+            <th key={e}>
+              {e}
+              <StatsButton
+                column={i}
+                columnSort={columnSort}
+                sorting={sorting}
+                alpha={i === 0 ? true : undefined}
+              />
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          myProgress.length > 0
+            ? myProgress.map(progressMapper)
+            : ''
+        }
+        <tr className="end-of-personal-progress" />
+        {
+          myProgress.length > 0
+            ? overallProgress() : ''
+        }
+        <tr />
+        <tr><td><strong>Progress Leaders: </strong></td></tr>
+        {
+          leaderboard.length > 0
+            ? leaderboard.map(leaderboardMapper) : ''
+        }
+      </tbody>
     </table>
   );
 };
