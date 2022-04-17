@@ -3,7 +3,7 @@ const debug = require('debug')('nodb-controller');
 
 module.exports = {
   getReact: (_, res) => {
-    res.sendFile(path.join(__dirname, '../build/index.html'));
+    res.sendFile(path.join(__dirname, '../public/index.html'));
   },
 
   logout: (req, res) => {
