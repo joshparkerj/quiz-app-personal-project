@@ -32,6 +32,7 @@ jobs:
     - run: npm audit
     - run: npm run build --if-present
     - run: npm run lint
+    - run: echo "SEC=verysecretcisecret" > ./.env
     - run: npm test
     - name: Codecov
       uses: codecov/codecov-action@v2.1.0
