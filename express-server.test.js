@@ -9,13 +9,10 @@ afterAll(() => {
   expressServer.close();
 });
 
-xit('creates a user', async () => {
-  const res = await axios.post('http://localhost:8090/user', {
-    username: 'test',
-    password: 'test',
-    email: 'test@email.co',
-  });
-  expect(res.status).toBe(201); // created
+it('gets a category', async () => {
+  const res = await axios.get('http://localhost:8090/create-game/anime/15');
+
+  expect(res.status).toBe(200); // ok
 });
 
 it('returns all stats', async () => {
